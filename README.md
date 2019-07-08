@@ -2,7 +2,12 @@
 [![GitHub contributors](https://img.shields.io/github/contributors/biospheere/spoticord.svg)](https://github.com/Biospheere/spoticord/graphs/contributors/)
 [![c0debase Discord](https://discordapp.com/api/guilds/361448651748540426/embed.png)](https://discord.gg/BDwBeZ3)
 
-# WheresTheParty
+# spoticord
+
+View your guild's Spotify listening activity.
+
+
+## :zap: Commands 
 
 ## 🔰 Prerequisites
 
