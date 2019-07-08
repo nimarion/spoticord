@@ -2,6 +2,8 @@
 
     <logger name="net.dv8tion.jda" level="ERROR"/>
     <logger name="org.mongodb.driver" level="ERROR"/>
+    <logger name="org.reflections.Reflections" level="ERROR"/>
+
 
     <appender name="Console" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>

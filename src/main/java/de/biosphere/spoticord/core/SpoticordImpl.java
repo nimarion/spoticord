@@ -1,5 +1,6 @@
 package de.biosphere.spoticord.core;
 
+import de.biosphere.spoticord.commands.CommandManager;
 import de.biosphere.spoticord.database.DataManager;
 import de.biosphere.spoticord.database.MongoDataManager;
 import de.biosphere.spoticord.database.SpotifyTrack;
@@ -20,6 +21,7 @@ public class SpoticordImpl implements Spoticord {
 
     private final JDA jda;
     private final DataManager dataManager;
+    private final CommandManager commandManager;
 
 
     public SpoticordImpl() throws Exception {
@@ -31,6 +33,9 @@ public class SpoticordImpl implements Spoticord {
 
         jda = initializeJDA();
         logger.info("JDA set up!");
+
+        commandManager = new CommandManager(this);
+        logger.info("Command-Manager set up!");
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             jda.shutdown();
@@ -94,7 +99,7 @@ public class SpoticordImpl implements Spoticord {
 
     @Override
     public JDA getJDA() {
-        return null;
+        return jda;
     }
 
     @Override
