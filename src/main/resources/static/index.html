@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en" style="background: #1976D2;">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <!-- Compiled and minified CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
+
+    <!-- Compiled and minified JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+
+</head>
+<body>
+
+<nav>
+    <div class="nav-wrapper cyan darken-3">
+        <a class="brand-logo center" href="#" style="color: #FAFAFA">Spoticord</a>
+        <ul class="left hide-on-med-and-down" id="nav-mobile">
+
+        </ul>
+    </div>
+</nav>
+
+<div class="container">
+    <br>
+    <table>
+        <thead>
+        <tr>
+            <th>Title</th>
+            <th>Artist</th>
+            <th>Album</th>
+            <th>Listener</th>
+        </tr>
+        </thead>
+        <tbody id="tracklist">
+
+        </tbody>
+    </table>
+</div>
+
+<script>
+    const url = window.location.protocol + '//' + window.location.hostname + ':' + window.location.port + '/top';
+    var tbl = document.getElementById('tracklist');
+
+    var getJSON = function (url, callback) {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', url, true);
+        xhr.responseType = 'json';
+        xhr.onload = function () {
+            var status = xhr.status;
+            if (status === 200) {
+                callback(null, xhr.response);
+            } else {
+                callback(status, xhr.response);
+            }
+        };
+        xhr.send();
+    };
+
+    getJSON(url,
+        function (err, data) {
+            if (err !== null) {
+                alert('Something went wrong: ' + err);
+            } else {
+                for (var i = 0; i < data.length; i++) {
+                    var obj = data[i];
+                    var tr = document.createElement('tr');
+                    tr.innerHTML = '<td>' + obj.title + '</td>' + '<td>' + obj.artist + '</td>' + '<td>' + obj.albumTitle + '</td>' + '<td>' + obj.totalCount + '</td>';
+
+                    tbl.appendChild(tr);
+                }
+            }
+        });
+</script>
+</body>
+</html>

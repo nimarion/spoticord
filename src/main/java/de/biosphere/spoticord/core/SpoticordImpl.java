@@ -4,6 +4,8 @@ import de.biosphere.spoticord.commands.CommandManager;
 import de.biosphere.spoticord.database.DataManager;
 import de.biosphere.spoticord.database.MongoDataManager;
 import de.biosphere.spoticord.database.SpotifyTrack;
+import io.javalin.Javalin;
+import io.javalin.http.staticfiles.Location;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
@@ -22,6 +24,7 @@ public class SpoticordImpl implements Spoticord {
     private final JDA jda;
     private final DataManager dataManager;
     private final CommandManager commandManager;
+    private final Javalin javalin;
 
 
     public SpoticordImpl() throws Exception {
@@ -37,8 +40,15 @@ public class SpoticordImpl implements Spoticord {
         commandManager = new CommandManager(this);
         logger.info("Command-Manager set up!");
 
+        javalin = Javalin.create().start(8080);
+        javalin.get("/top", context -> context.json(dataManager.getTotalTop(10)));
+        javalin.config.addStaticFiles("src/main/resources/static", Location.EXTERNAL);
+        javalin.config.addSinglePageRoot("/", "src/main/resources/static/index.html", Location.EXTERNAL);
+        logger.info("Javalin set up!");
+
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             jda.shutdown();
+            javalin.stop();
         }));
 
         logger.info(String.format("Startup finished in %dms!", System.currentTimeMillis() - startTime));
@@ -105,5 +115,10 @@ public class SpoticordImpl implements Spoticord {
     @Override
     public DataManager getDataManager() {
         return dataManager;
+    }
+
+    @Override
+    public CommandManager getCommandManager() {
+        return commandManager;
     }
 }
