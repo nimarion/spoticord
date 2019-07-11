@@ -25,6 +25,6 @@ public class RandomCommand extends Command {
         embedBuilder.addField("Listener", Integer.toString(randomTrack.totalCount), true);
 
         message.getChannel().sendMessage(embedBuilder.build()).queue();
-        message.getChannel().sendMessage("https://open.spotify.com/track/" + randomTrack.id).queue();
+        message.getChannel().sendMessage("https://open.spotify.com/track/" + randomTrack.trackId).queue();
     }
 }

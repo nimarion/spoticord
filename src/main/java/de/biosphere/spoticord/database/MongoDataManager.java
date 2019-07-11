@@ -11,7 +11,7 @@ import org.bson.Document;
 import org.bson.json.JsonWriterSettings;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -40,22 +40,22 @@ public class MongoDataManager implements DataManager {
 
     @Override
     public void updateTrackData(final SpotifyTrack spotifyTrack) {
-        databaseManager.getTracks().replaceOne(Filters.and(Filters.eq("id", spotifyTrack.id)), Document.parse(gson.toJson(spotifyTrack)));
-        trackCache.put(spotifyTrack.id, spotifyTrack);
+        databaseManager.getTracks().replaceOne(Filters.and(Filters.eq("trackId", spotifyTrack.trackId), Filters.eq("guildId", spotifyTrack.guildId)), Document.parse(gson.toJson(spotifyTrack)));
+        trackCache.put(spotifyTrack.guildId + "-" + spotifyTrack.trackId, spotifyTrack);
     }
 
     @Override
-    public SpotifyTrack getTrackData(final String trackID) {
-        if (trackCache.containsKey(trackID)) {
-            return trackCache.get(trackID);
+    public SpotifyTrack getTrackData(final String trackId, final String guildId) {
+        if (trackCache.containsKey(guildId + "-" + trackId)) {
+            return trackCache.get(guildId + "-" + trackId);
         }
-        final Document document = databaseManager.getTracks().find(Filters.and(Filters.eq("id", trackID))).first();
+        final Document document = databaseManager.getTracks().find(Filters.and(Filters.eq("trackId", trackId), Filters.eq("guildId", guildId))).first();
         final SpotifyTrack spotifyTrack;
         if (document == null) {
             return null;
         } else {
             spotifyTrack = gson.fromJson(document.toJson(jsonWriterSettings), SpotifyTrack.class);
-            trackCache.put(trackID, spotifyTrack);
+            trackCache.put(spotifyTrack.guildId + "-" + spotifyTrack.trackId, spotifyTrack);
             return spotifyTrack;
         }
     }
@@ -63,11 +63,11 @@ public class MongoDataManager implements DataManager {
     @Override
     public void insertTrackData(final SpotifyTrack spotifyTrack) {
         databaseManager.getTracks().insertOne(Document.parse(gson.toJson(spotifyTrack)));
-        trackCache.put(spotifyTrack.id, spotifyTrack);
+        trackCache.put(spotifyTrack.guildId + "-" + spotifyTrack.trackId, spotifyTrack);
     }
 
     @Override
-    public List<SpotifyTrack> getTotalTop(int amount) {
+    public List<SpotifyTrack> getGlobalTop(final int amount) {
         final List<SpotifyTrack> spotifyTracks = new ArrayList<>();
         final FindIterable<Document> document = databaseManager.getTracks().find().sort(Sorts.descending("totalCount")).limit(amount);
 
@@ -79,8 +79,20 @@ public class MongoDataManager implements DataManager {
     }
 
     @Override
+    public List<SpotifyTrack> getTotalTop(final int amount, final String guildId) {
+        final List<SpotifyTrack> spotifyTracks = new ArrayList<>();
+        final FindIterable<Document> document = databaseManager.getTracks().find(Filters.eq("guildId", guildId)).sort(Sorts.descending("totalCount")).limit(amount);
+
+        for (Document aDocument : document) {
+            spotifyTracks.add(gson.fromJson(aDocument.toJson(jsonWriterSettings), SpotifyTrack.class));
+        }
+
+        return spotifyTracks;
+    }
+
+    @Override
     public SpotifyTrack getRandomTrack() {
-        final AggregateIterable<Document> documents = databaseManager.getTracks().aggregate(Arrays.asList(Aggregates.sample(1)));
+        final AggregateIterable<Document> documents = databaseManager.getTracks().aggregate(Collections.singletonList(Aggregates.sample(1)));
         if (documents.first() == null) {
             return null;
         }

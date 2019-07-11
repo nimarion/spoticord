@@ -14,7 +14,7 @@ public class TopCommand extends Command {
 
     @Override
     public void execute(String[] args, Message message) {
-        final List<SpotifyTrack> spotifyTracks = getBot().getDataManager().getTotalTop(10);
+        final List<SpotifyTrack> spotifyTracks = getBot().getDataManager().getTotalTop(10, message.getGuild().getId());
         final EmbedBuilder embedBuilder = getEmbed(message.getGuild(), message.getAuthor());
         if (!spotifyTracks.isEmpty()) {
             embedBuilder.setThumbnail(spotifyTracks.get(0).albumImageUrl);

@@ -5,13 +5,15 @@ import java.util.List;
 
 public interface DataManager extends AutoCloseable {
 
-    SpotifyTrack getTrackData(final String trackID);
+    SpotifyTrack getTrackData(final String trackID, final String guildId);
 
     void insertTrackData(final SpotifyTrack spotifyTrack);
 
     void updateTrackData(final SpotifyTrack spotifyTrack);
 
-    List<SpotifyTrack> getTotalTop(final int amount);
+    List<SpotifyTrack> getGlobalTop(final int amount);
+
+    List<SpotifyTrack> getTotalTop(final int amount, final String guildId);
 
     SpotifyTrack getRandomTrack();
 

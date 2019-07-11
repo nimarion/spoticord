@@ -41,7 +41,9 @@ public class SpoticordImpl implements Spoticord {
         logger.info("Command-Manager set up!");
 
         javalin = Javalin.create().start(8080);
-        javalin.get("/top", context -> context.json(dataManager.getTotalTop(10)));
+        javalin.get("/top", context -> context.json(dataManager.getGlobalTop(10)));
+        javalin.get("/top/:id", context -> context.json(dataManager.getTotalTop(10, context.pathParam("id"))));
+        javalin.get("/random", context -> context.json(dataManager.getRandomTrack()));
         javalin.config.addStaticFiles("src/main/resources/static", Location.EXTERNAL);
         javalin.config.addSinglePageRoot("/", "src/main/resources/static/index.html", Location.EXTERNAL);
         logger.info("Javalin set up!");
@@ -82,11 +84,12 @@ public class SpoticordImpl implements Spoticord {
                         }
                         final RichPresence richPresence = event.getNewGame().asRichPresence();
 
-                        final SpotifyTrack oldTrackData = dataManager.getTrackData(richPresence.getSyncId());
+                        final SpotifyTrack oldTrackData = dataManager.getTrackData(richPresence.getSyncId(), event.getGuild().getId());
 
                         if (oldTrackData == null) {
                             SpotifyTrack spotifyTrack = new SpotifyTrack();
-                            spotifyTrack.id = richPresence.getSyncId();
+                            spotifyTrack.trackId = richPresence.getSyncId();
+                            spotifyTrack.guildId = event.getGuild().getId();
                             spotifyTrack.albumImageUrl = richPresence.getLargeImage().getUrl();
                             spotifyTrack.albumTitle = richPresence.getLargeImage().getText();
                             spotifyTrack.artist = richPresence.getState();
