@@ -42,6 +42,10 @@ public class CommandManager extends ListenerAdapter {
         if (event.getAuthor().isBot()) {
             return;
         }
+        if (System.getenv("DISCORD_CHANNEL") != null && !event.getChannel().getName().equalsIgnoreCase(System.getenv("DISCORD_CHANNEL"))) {
+            return;
+        }
+
         final String content = event.getMessage().getContentRaw();
 
         if (content.startsWith("+")) {
