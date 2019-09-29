@@ -2,39 +2,48 @@
 <html lang="en">
 
 <head>
-    <title>Spoticord</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta content="width=device-width, initial-scale=1" name="viewport">
     <link href='https://fonts.googleapis.com/css?family=Fira Sans' rel='stylesheet'>
-    <link rel="stylesheet" type="text/css" href="main.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href="main.css" rel="stylesheet" type="text/css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
     <meta charset="utf-8">
+    <title>Spoticord — Discord guild listening activity</title>
+    <meta content="Spoticord — Discord guild listening activity" name="title">
+    <meta content="With Spoticord you can view your discord guild's Spotify listening activity." name="description">
+    <!-- Open Graph / Facebook -->
+    <meta content="website" property="og:type">
+    <!-- <meta property="og:url" content="<INSERT URL>"> -->
+    <meta content="Spoticord — Discord guild listening activity" property="og:title">
+    <meta content="With Spoticord you can view your discord guild's Spotify listening activity." property="og:description">
+    <!-- Twitter -->
+    <meta content="summary_large_image" property="twitter:card">
+    <!-- <meta property="twitter:url" content="<INSERT URL>"> -->
+    <meta content="Spoticord — Discord guild listening activity" property="twitter:title">
+    <meta content="With Spoticord you can view your discord guild's Spotify listening activity." property="twitter:description">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@8">
+    </script>
 </head>
 
 <body>
     <nav id="navBar">
         <!--<a href="#" class="active">Login</a>-->
-        <a href="https://github.com/Biospheere/spoticord" target="_blank"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a>
-        <a class="icon" onclick="toggleNavbar()">
-            <i class="fa fa-bars"></i>
-        </a>
+        <a href="https://github.com/Biospheere/spoticord" rel="noreferrer" target="_blank"><i aria-hidden="true"
+				class="fa fa-github"></i> GitHub</a> <a class="icon" onclick="toggleNavbar()"><i
+				class="fa fa-bars"></i></a>
     </nav>
-
     <div class="container">
         <table>
             <thead>
                 <tr>
-                    <th><i class="fa fa-music" aria-hidden="true"></i> Title</th>
-                    <th><i class="fa fa-user" aria-hidden="true"></i> Artist</th>
-                    <th><i class="fa fa-list" aria-hidden="true"></i> Album</th>
-                    <th><i class="fa fa-headphones" aria-hidden="true"></i> Listener</th>
+                    <th><i aria-hidden="true" class="fa fa-music"></i> Title</th>
+                    <th><i aria-hidden="true" class="fa fa-user"></i> Artist</th>
+                    <th><i aria-hidden="true" class="fa fa-list"></i> Album</th>
+                    <th><i aria-hidden="true" class="fa fa-headphones"></i> Listener</th>
                 </tr>
             </thead>
-            <tbody id="tracklist">
-
-            </tbody>
+            <tbody id="tracklist"></tbody>
         </table>
     </div>
-
     <script>
         const url = window.location.protocol + '//' + window.location.hostname + ':' + window.location.port + '/top';
         var tbl = document.getElementById('tracklist');
@@ -52,19 +61,23 @@
             };
             xhr.send();
         };
-        getJSON(url,
-            function(err, data) {
-                if (err !== null) {
-                    alert('Something went wrong: ' + err);
-                } else {
-                    for (var i = 0; i < data.length; i++) {
-                        var obj = data[i];
-                        var tr = document.createElement('tr');
-                        tr.innerHTML = '<td>' + obj.title + '</td>' + '<td>' + obj.artist + '</td>' + '<td>' + obj.albumTitle + '</td>' + '<td>' + obj.totalCount + '</td>';
-                        tbl.appendChild(tr);
-                    }
+        getJSON(url, function(err, data) {
+            if (err !== null) {
+                Swal.fire({
+                    type: 'error',
+                    title: 'Oops...',
+                    text: 'Something went wrong!',
+                    footer: '<a class="swal-link" href="https://github.com/Biospheere/spoticord/issues/new?labels=bug&title=Automatically+generated+bug+report&body=Error%20thrown:%20```' + err + '```">Report this bug<\/a>'
+                })
+            } else {
+                for (var i = 0; i < data.length; i++) {
+                    var obj = data[i];
+                    var tr = document.createElement('tr');
+                    tr.innerHTML = '<td>' + obj.title + '<\/td>' + '<td>' + obj.artist + '<\/td>' + '<td>' + obj.albumTitle + '<\/td>' + '<td>' + obj.totalCount + '<\/td>';
+                    tbl.appendChild(tr);
                 }
-            });
+            }
+        });
 
         function toggleNavbar() {
             var element = document.getElementById("navBar");
