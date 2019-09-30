@@ -1,76 +1,80 @@
 <!DOCTYPE html>
-<html lang="en" style="background: #1976D2;">
+<html lang="de">
+
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-    <!-- Compiled and minified CSS -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
-
-    <!-- Compiled and minified JavaScript -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
-
+    <title>Spoticord</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href='https://fonts.googleapis.com/css?family=Fira Sans' rel='stylesheet'>
+    <link rel="stylesheet" type="text/css" href="main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
+
 <body>
+    <nav id="navBar">
+        <!--<a href="#" class="active">Login</a>-->
+        <a href="https://github.com/Biospheere/spoticord" target="_blank">Github</a>
+        <a class="icon" onclick="toggleNavbar()">
+            <i class="fa fa-bars"></i>
+        </a>
+    </nav>
 
-<nav>
-    <div class="nav-wrapper cyan darken-3">
-        <a class="brand-logo center" href="#" style="color: #FAFAFA">Spoticord</a>
-        <ul class="left hide-on-med-and-down" id="nav-mobile">
+    <div class="container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Artist</th>
+                    <th>Album</th>
+                    <th>Listener</th>
+                </tr>
+            </thead>
+            <tbody id="tracklist">
 
-        </ul>
+            </tbody>
+        </table>
     </div>
-</nav>
 
-<div class="container">
-    <br>
-    <table>
-        <thead>
-        <tr>
-            <th>Title</th>
-            <th>Artist</th>
-            <th>Album</th>
-            <th>Listener</th>
-        </tr>
-        </thead>
-        <tbody id="tracklist">
-
-        </tbody>
-    </table>
-</div>
-
-<script>
-    const url = window.location.protocol + '//' + window.location.hostname + ':' + window.location.port + '/top';
-    var tbl = document.getElementById('tracklist');
-
-    var getJSON = function (url, callback) {
-        var xhr = new XMLHttpRequest();
-        xhr.open('GET', url, true);
-        xhr.responseType = 'json';
-        xhr.onload = function () {
-            var status = xhr.status;
-            if (status === 200) {
-                callback(null, xhr.response);
-            } else {
-                callback(status, xhr.response);
-            }
-        };
-        xhr.send();
-    };
-
-    getJSON(url,
-        function (err, data) {
-            if (err !== null) {
-                alert('Something went wrong: ' + err);
-            } else {
-                for (var i = 0; i < data.length; i++) {
-                    var obj = data[i];
-                    var tr = document.createElement('tr');
-                    tr.innerHTML = '<td>' + obj.title + '</td>' + '<td>' + obj.artist + '</td>' + '<td>' + obj.albumTitle + '</td>' + '<td>' + obj.totalCount + '</td>';
-
-                    tbl.appendChild(tr);
+    <script>
+        const url = window.location.protocol + '//' + window.location.hostname + ':' + window.location.port + '/top';
+        var tbl = document.getElementById('tracklist');
+        var getJSON = function(url, callback) {
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', url, true);
+            xhr.responseType = 'json';
+            xhr.onload = function() {
+                var status = xhr.status;
+                if (status === 200) {
+                    callback(null, xhr.response);
+                } else {
+                    callback(status, xhr.response);
                 }
+            };
+            xhr.send();
+        };
+        getJSON(url,
+            function(err, data) {
+                if (err !== null) {
+                    alert('Something went wrong: ' + err);
+                } else {
+                    for (var i = 0; i < data.length; i++) {
+                        var obj = data[i];
+                        var tr = document.createElement('tr');
+                        tr.innerHTML = '<td>' + obj.title + '</td>' + '<td>' + obj.artist + '</td>' + '<td>' + obj.albumTitle + '</td>' + '<td>' + obj.totalCount + '</td>';
+                        tbl.appendChild(tr);
+                    }
+                }
+            });
+
+        function toggleNavbar() {
+            var element = document.getElementById("navBar");
+            console.log(element.className.endsWith("responsive"));
+            if (element.className.endsWith("responsive")) {
+                element.className = "navBar";
+            } else {
+                element.className = "responsive";
             }
-        });
-</script>
+        }
+    </script>
 </body>
+
 </html>
