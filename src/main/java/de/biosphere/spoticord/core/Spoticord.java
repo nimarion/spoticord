@@ -11,11 +11,11 @@ import io.javalin.Javalin;
 import io.javalin.http.staticfiles.Location;
 import io.javalin.plugin.json.JavalinJson;
 import io.prometheus.client.exporter.HTTPServer;
-import net.dv8tion.jda.core.AccountType;
-import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.JDABuilder;
-import net.dv8tion.jda.core.events.ReadyEvent;
-import net.dv8tion.jda.core.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.AccountType;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.events.ReadyEvent;
+import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -90,13 +90,12 @@ public class Spoticord {
         try {
             final JDABuilder jdaBuilder = new JDABuilder(AccountType.BOT);
             jdaBuilder.setToken(System.getenv("DISCORD_TOKEN"));
-            jdaBuilder.addEventListener(new ListenerAdapter() {
+            jdaBuilder.addEventListeners(new ListenerAdapter() {
                 @Override
                 public void onReady(ReadyEvent event) {
                     logger.info(String.format("Logged in as %s#%s", event.getJDA().getSelfUser().getName(), event.getJDA().getSelfUser().getDiscriminator()));
                 }
-            });
-            jdaBuilder.addEventListener(new DiscordUserUpdateGameListener(this));
+            }, new DiscordUserUpdateGameListener(this));
             return jdaBuilder.build().awaitReady();
         } catch (Exception exception) {
             logger.error("Encountered exception while initializing ShardManager!");
