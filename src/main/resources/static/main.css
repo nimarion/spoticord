@@ -1,15 +1,15 @@
 * {
     box-sizing: border-box;
-    font-family: 'Fira Sans';
+    font-family: "Fira Sans";
 }
 
 body {
-    background: #2BA84A;
+    background: #2ba84a;
 }
 
 nav {
     overflow: hidden;
-    background: #040F0F;
+    background: #040f0f;
 }
 
 nav a {
@@ -18,30 +18,30 @@ nav a {
     padding: 14px 16px;
     text-align: center;
     text-decoration: none;
-    color: #1DB954;
+    color: #1db954;
     font-size: 17px;
 }
 
 nav a.icon {
     display: none;
-    color: #FFFFFF;
+    color: #ffffff;
 }
 
 nav a:hover {
-    color: #FFFFFF;
+    color: #ffffff;
     background-color: #248232;
 }
 
 nav a.active {
-    color: #040F0F;
-    background-color: #FCFFFC;
+    color: #040f0f;
+    background-color: #fcfffc;
 }
 
 .container {
     margin-top: 10px;
     overflow-x: auto;
-    background: #2D3A3A;
-    color: #FFFFFF;
+    background: #2d3a3a;
+    color: #ffffff;
 }
 
 .container table {
@@ -81,4 +81,11 @@ td {
         display: block;
         text-align: left;
     }
+}
+
+.swal-link {
+    color: #2196f3;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
 }
