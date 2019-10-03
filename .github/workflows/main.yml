@@ -23,7 +23,7 @@ jobs:
       with:
         args: build -t docker.pkg.github.com/biospheere/spoticord/spoticord . 
     - name: Push to GitHub Package Registry
-      if: github.ref == 'master'  &&  github.event == 'push'
+      if: github.base_ref == 'master'  &&  github.event == 'push'
       uses: actions/docker/cli@master
       with:
         args: push docker.pkg.github.com/biospheere/spoticord/spoticord
