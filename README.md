@@ -21,6 +21,11 @@ View your guild's Spotify listening activity.
 
 ## 🛠 Installation
 
+```
+docker run --name some-mongo -d mongo
+docker run --name spot -p 8080:8080 --link some-mongo:some-mongo -e MONGO_HOST='some-mongo' -e DISCORD_TOKEN='YOUR_TOKEN' biospheere/spoticord
+```
+
 ## ⚖ [License](https://github.com/Biospheere/spoticord/blob/master/LICENSE)
 MIT © [Niklas](https://github.com/Biospheere/)
 
