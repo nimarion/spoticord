@@ -1,8 +1,8 @@
 package de.biosphere.spoticord.commands;
 
 import de.biosphere.spoticord.database.SpotifyTrack;
-import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Message;
 
 import java.util.List;
 

@@ -26,5 +26,15 @@
 out
 gen
 
-.env
+#Maven
+target/
 
+#Visual Studio Code
+.vscode
+.classpath
+.project
+
+#Other
+.env
+.directory
+.settings

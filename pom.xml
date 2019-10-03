@@ -26,7 +26,7 @@
         <dependency>
             <groupId>net.dv8tion</groupId>
             <artifactId>JDA</artifactId>
-            <version>3.8.3_464</version>
+            <version>4.0.0_50</version>
             <exclusions>
                 <exclusion>
                     <groupId>club.minnced</groupId>
@@ -38,13 +38,13 @@
         <dependency>
             <groupId>io.sentry</groupId>
             <artifactId>sentry-logback</artifactId>
-            <version>1.7.27</version>
+            <version>1.7.23</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.mongodb/mongo-java-driver -->
         <dependency>
             <groupId>org.mongodb</groupId>
             <artifactId>mongo-java-driver</artifactId>
-            <version>3.11.0</version>
+            <version>3.10.2</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/net.jodah/expiringmap -->
         <dependency>
@@ -68,16 +68,15 @@
         <dependency>
             <groupId>io.javalin</groupId>
             <artifactId>javalin</artifactId>
-            <version>3.5.0</version>
+            <version>3.1.0</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core/2.9.9 -->
+        <!-- https://mvnrepository.com/artifact/io.prometheus/simpleclient_httpserver -->
         <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <version>2.10.0.pr1</version>
+            <groupId>io.prometheus</groupId>
+            <artifactId>simpleclient_httpserver</artifactId>
+            <version>0.6.0</version>
         </dependency>
     </dependencies>
-
 
     <build>
         <resources>
@@ -132,6 +131,5 @@
             </plugin>
         </plugins>
     </build>
-
 
 </project>

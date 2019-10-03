@@ -1,8 +1,8 @@
 package de.biosphere.spoticord.commands;
 
 import de.biosphere.spoticord.core.Spoticord;
-import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
-import net.dv8tion.jda.core.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,6 +42,10 @@ public class CommandManager extends ListenerAdapter {
         if (event.getAuthor().isBot()) {
             return;
         }
+        if (System.getenv("DISCORD_CHANNEL") != null && !event.getChannel().getName().equalsIgnoreCase(System.getenv("DISCORD_CHANNEL"))) {
+            return;
+        }
+
         final String content = event.getMessage().getContentRaw();
 
         if (content.startsWith("+")) {

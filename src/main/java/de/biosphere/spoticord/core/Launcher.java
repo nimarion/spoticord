@@ -10,7 +10,7 @@ public class Launcher {
             Sentry.init();
         }
         try {
-            new SpoticordImpl();
+            new Spoticord();
         } catch (Exception exception) {
             LoggerFactory.getLogger(Launcher.class).error("Encountered exception while initializing the bot!", exception);
             System.exit(1);
