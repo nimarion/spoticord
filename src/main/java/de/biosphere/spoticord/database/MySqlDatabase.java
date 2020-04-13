@@ -24,6 +24,21 @@ public class MySqlDatabase implements Database {
         config.setPassword(password);
         config.addDataSourceProperty("cachePrepStmts", "true");
         dataSource = new HikariDataSource(config);
+
+        try (final Connection connection = getConnection()) {
+            final PreparedStatement preparedStatement = connection.prepareStatement(
+                    "CREATE TABLE IF NOT EXISTS `Listens` ( `Id` INT NOT NULL AUTO_INCREMENT , `Timestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , `TrackId` VARCHAR(22) NOT NULL , `GuildId` VARCHAR(100) NOT NULL , `UserId` VARCHAR(100) NOT NULL , INDEX `Id` (`Id`));");
+            preparedStatement.executeUpdate();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        try (final Connection connection = getConnection()) {
+            final PreparedStatement preparedStatement = connection.prepareStatement(
+                    "CREATE TABLE IF NOT EXISTS `Tracks` ( `Id` VARCHAR(22) NOT NULL , `Artists` VARCHAR(200) NOT NULL , `AlbumImageUrl` VARCHAR(2083) NOT NULL , `AlbumTitle` VARCHAR(200) NOT NULL , `TrackTitle` VARCHAR(200) NOT NULL , `Duration` INT NOT NULL , PRIMARY KEY (`Id`));");
+            preparedStatement.executeUpdate();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
     }
 
     @Override
@@ -53,8 +68,8 @@ public class MySqlDatabase implements Database {
     @Override
     public SpotifyTrack getRandomTrack(final String guildId) {
         try (final Connection connection = getConnection()) {
-            final PreparedStatement preparedStatement = connection
-                    .prepareStatement("SELECT Tracks.* FROM Listens INNER JOIN Tracks ON Listens.TrackId=Tracks.Id WHERE GuildId=? ORDER BY RAND() LIMIT 1");
+            final PreparedStatement preparedStatement = connection.prepareStatement(
+                    "SELECT Tracks.* FROM Listens INNER JOIN Tracks ON Listens.TrackId=Tracks.Id WHERE GuildId=? ORDER BY RAND() LIMIT 1");
             preparedStatement.setString(1, guildId);
             final ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
@@ -168,7 +183,7 @@ public class MySqlDatabase implements Database {
         return dataSource.getConnection();
     }
 
-    private SpotifyTrack getTrackFromResultSet(final ResultSet resultSet) throws SQLException{
+    private SpotifyTrack getTrackFromResultSet(final ResultSet resultSet) throws SQLException {
         final SpotifyTrack spotifyTrack = new SpotifyTrack();
         spotifyTrack.setId(resultSet.getString("Id"));
         spotifyTrack.setArtists(resultSet.getString("Artists"));
