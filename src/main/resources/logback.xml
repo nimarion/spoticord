@@ -4,6 +4,8 @@
     <logger name="org.mongodb.driver" level="ERROR"/>
     <logger name="org.reflections.Reflections" level="ERROR"/>
     <logger name="io.javalin.Javalin" level="ERROR"/>
+    <logger name="com.zaxxer.hikari" level="ERROR"/>
+    <logger name="io.sentry" level="ERROR"/>
 
     <appender name="Console" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
