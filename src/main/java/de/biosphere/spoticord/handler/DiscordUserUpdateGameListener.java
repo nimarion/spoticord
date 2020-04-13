@@ -1,7 +1,7 @@
 package de.biosphere.spoticord.handler;
 
 import de.biosphere.spoticord.core.Spoticord;
-import de.biosphere.spoticord.database.SpotifyTrack;
+import de.biosphere.spoticord.database.model.SpotifyTrack;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.RichPresence;
@@ -24,32 +24,28 @@ public class DiscordUserUpdateGameListener extends ListenerAdapter {
 
     @Override
     public void onUserActivityStart(@Nonnull UserActivityStartEvent event) {
-        if (event.getNewActivity() == null || !event.getNewActivity().isRich() || event.getNewActivity().getType() != Activity.ActivityType.LISTENING)
+        if (event.getNewActivity() == null || !event.getNewActivity().isRich()
+                || event.getNewActivity().getType() != Activity.ActivityType.LISTENING)
             return;
 
         final RichPresence richPresence = event.getNewActivity().asRichPresence();
         if (richPresence == null || richPresence.getDetails() == null || richPresence.getSyncId() == null)
             return;
 
-        if (lastActivitiesMap.containsKey(event.getMember()) && lastActivitiesMap.get(event.getMember()).asRichPresence().getDetails().equalsIgnoreCase(richPresence.getDetails())) {
+        if (lastActivitiesMap.containsKey(event.getMember()) && lastActivitiesMap.get(event.getMember())
+                .asRichPresence().getDetails().equalsIgnoreCase(richPresence.getDetails())) {
             return;
         }
         lastActivitiesMap.put(event.getMember(), event.getNewActivity());
 
-        final SpotifyTrack oldTrackData = bot.getDataManager().getTrackData(richPresence.getSyncId(), event.getGuild().getId());
-        if (oldTrackData == null) {
-            SpotifyTrack spotifyTrack = new SpotifyTrack();
-            spotifyTrack.trackId = richPresence.getSyncId();
-            spotifyTrack.guildId = event.getGuild().getId();
-            spotifyTrack.albumImageUrl = richPresence.getLargeImage().getUrl();
-            spotifyTrack.albumTitle = richPresence.getLargeImage().getText();
-            spotifyTrack.artist = richPresence.getState();
-            spotifyTrack.title = richPresence.getDetails();
-            spotifyTrack.totalCount = 1;
-            bot.getDataManager().insertTrackData(spotifyTrack);
-        } else {
-            oldTrackData.totalCount++;
-            bot.getDataManager().updateTrackData(oldTrackData);
-        }
+        SpotifyTrack spotifyTrack = new SpotifyTrack();
+        spotifyTrack.setId(richPresence.getSyncId());
+        spotifyTrack.setAlbumImageUrl(richPresence.getLargeImage().getUrl());
+        spotifyTrack.setAlbumTitle(richPresence.getLargeImage().getText());
+        spotifyTrack.setArtists(richPresence.getState());
+        spotifyTrack.setTrackTitle(richPresence.getDetails());
+        spotifyTrack.setDuration(richPresence.getTimestamps().getEnd() - richPresence.getTimestamps().getStart());
+
+        bot.getDatabase().insertTrackData(spotifyTrack, event.getMember().getId(), event.getGuild().getId());
     }
 }
