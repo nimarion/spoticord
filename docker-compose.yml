@@ -1,0 +1,21 @@
+version: '3'
+services:
+  bot:
+    image: "biospheere/spoticord"
+    restart: always
+    env_file: .env
+    depends_on:
+    - db
+    links:
+    - db
+  db:
+    image: mysql:8
+    restart: always
+    container_name: mysql 
+    env_file: .env
+    volumes:
+    - mysql-volume:/var/lib/mysql
+
+
+volumes:
+  mysql-volume:
