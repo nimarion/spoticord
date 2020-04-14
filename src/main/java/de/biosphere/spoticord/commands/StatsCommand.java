@@ -16,6 +16,7 @@ public class StatsCommand extends Command {
         final Integer listensAmount = getBot().getDatabase().getListensAmount(message.getGuild().getId());
         final EmbedBuilder embedBuilder = getEmbed(message.getGuild(), message.getAuthor());
 
+        embedBuilder.setTitle("spoticord", "https://github.com/Biospheere/spoticord");
         embedBuilder.setThumbnail(getBot().getJDA().getSelfUser().getEffectiveAvatarUrl());
 
         embedBuilder.addField("Track Datapoints", String.valueOf(trackAmount), false);
