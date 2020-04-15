@@ -15,17 +15,11 @@ jobs:
       uses: LucaFeger/action-maven-cli@765e218a50f02a12a7596dc9e7321fc385888a27
       with:
         args: clean install
-    - name: Login to GitHub Package Registry
-      uses: actions/docker/login@master
-      env: 
-        DOCKER_REGISTRY_URL : docker.pkg.github.com
-        DOCKER_USERNAME: Biospheere
-        DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
     - name: Build Docker Image
-      uses: actions/docker/cli@master
-      with:
-        args: build -t docker.pkg.github.com/biospheere/spoticord/spoticord . 
-    - name: Push to GitHub Package Registry
-      uses: actions/docker/cli@master
-      with:
-        args: push docker.pkg.github.com/biospheere/spoticord/spoticord
+      run: docker build -t docker.pkg.github.com/biospheere/spoticord/spoticord . 
+    - name: Push the image to GPR
+      run: |
+        docker login docker.pkg.github.com -u publisher -p "${{ secrets.GITHUB_TOKEN }}"
+        docker push docker.pkg.github.com/biospheere/spoticord/spoticord
+      env: 
+        DOCKER_PASSWORD: ${{ secrets.GITHUB_TOKEN }}

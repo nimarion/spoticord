@@ -34,7 +34,7 @@ public class MySqlDatabase implements Database {
         }
         try (final Connection connection = getConnection()) {
             final PreparedStatement preparedStatement = connection.prepareStatement(
-                    "CREATE TABLE IF NOT EXISTS `Tracks` ( `Id` VARCHAR(22) NOT NULL , `Artists` VARCHAR(200) NOT NULL , `AlbumImageUrl` VARCHAR(2083) NOT NULL , `AlbumTitle` VARCHAR(200) NOT NULL , `TrackTitle` VARCHAR(200) NOT NULL , `Duration` INT NOT NULL , PRIMARY KEY (`Id`));");
+                    "CREATE TABLE IF NOT EXISTS `Tracks` ( `Id` VARCHAR(22) NOT NULL , `Artists` VARCHAR(200) NOT NULL , `AlbumImageUrl` VARCHAR(2083) NOT NULL , `AlbumTitle` VARCHAR(200) NOT NULL , `TrackTitle` VARCHAR(200) NOT NULL , `Duration` BIGINT UNSIGNED NOT NULL , PRIMARY KEY (`Id`));");
             preparedStatement.executeUpdate();
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -179,6 +179,42 @@ public class MySqlDatabase implements Database {
         return 0;
     }
 
+    @Override
+    public Long getListenTime(String guildId, String userId) {
+        try (final Connection connection = getConnection()){
+            final PreparedStatement preparedStatement = connection.prepareStatement(userId == null ? "SELECT SUM(Tracks.Duration) AS Duration FROM `Listens` INNER JOIN Tracks ON Listens.TrackId=Tracks.Id WHERE Listens.GuildId=?" : "SELECT SUM(Tracks.Duration) AS Duration FROM `Listens` INNER JOIN Tracks ON Listens.TrackId=Tracks.Id WHERE Listens.GuildId=? AND Listens.UserId=?");
+            preparedStatement.setString(1, guildId);
+            if(userId != null){
+                preparedStatement.setString(2, userId);
+            }
+            final ResultSet resultSet = preparedStatement.executeQuery();
+            if(resultSet.next()){
+                return resultSet.getLong("Duration");
+            }
+        } catch(SQLException ex){
+            ex.printStackTrace();
+        }
+        return 0L;
+    }
+
+    @Override
+    public Map<String, Long> getTopListenersByTime(String guildId, Integer count) {
+        final Map<String, Long> topMap = new LinkedHashMap<>();
+        try (final Connection connection = getConnection()){
+            final PreparedStatement preparedStatement = connection.prepareStatement("SELECT SUM(Tracks.Duration) AS Duration, Listens.UserId  FROM `Listens` INNER JOIN Tracks ON Listens.TrackId=Tracks.Id WHERE Listens.GuildId=? GROUP BY Listens.UserId ORDER BY Duration DESC LIMIT ?");
+            preparedStatement.setString(1, guildId);
+            preparedStatement.setInt(2, count);
+
+            final ResultSet resultSet = preparedStatement.executeQuery();
+            while(resultSet.next()){
+                topMap.put(resultSet.getString("UserId"), resultSet.getLong("Duration"));
+            }
+        } catch(SQLException ex){
+            ex.printStackTrace();
+        }
+        return topMap;
+    }
+
     private final Connection getConnection() throws SQLException {
         return dataSource.getConnection();
     }
@@ -190,7 +226,7 @@ public class MySqlDatabase implements Database {
         spotifyTrack.setAlbumImageUrl(resultSet.getString("AlbumImageUrl"));
         spotifyTrack.setAlbumTitle(resultSet.getString("AlbumTitle"));
         spotifyTrack.setTrackTitle(resultSet.getString("TrackTitle"));
-        spotifyTrack.setDuration(resultSet.getInt("Duration"));
+        spotifyTrack.setDuration(resultSet.getLong("Duration"));
         return spotifyTrack;
     }
 
