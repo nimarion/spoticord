@@ -18,5 +18,5 @@ jobs:
         run: |
           docker login docker.pkg.github.com -u publisher -p "${{ secrets.GITHUB_TOKEN }}"
           docker push docker.pkg.github.com/biospheere/spoticord/spoticord
-          docker login -u 'biospheere' -p " ${{ secrets.DOCKER_PASSWORD }}"
+          docker login -u 'biospheere' -p "${{ secrets.DOCKER_PASSWORD }}"
           docker push biospheere/spoticord
