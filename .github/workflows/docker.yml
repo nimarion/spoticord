@@ -10,9 +10,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
-      - name: Build Docker Image
+      - name: Build Docker Image for Github Packages
         run: docker build -t docker.pkg.github.com/biospheere/spoticord/spoticord . 
+      - name: Build Docker Image for Docker Hub
+        run: docker build -t biospheere/spoticord . 
       - name: Push the image to GPR
         run: |
           docker login docker.pkg.github.com -u publisher -p "${{ secrets.GITHUB_TOKEN }}"
           docker push docker.pkg.github.com/biospheere/spoticord/spoticord
+          docker login -u 'biospheere' -p " ${{ secrets.DOCKER_PASSWORD }}"
+          docker push biospheere/spoticord
