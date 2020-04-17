@@ -21,7 +21,7 @@ public class TopCommand extends Command {
 
         if (args.length == 0 || args[0].equalsIgnoreCase("server")) {
             final Map<SpotifyTrack, Integer> topMap = getBot().getDatabase().getTopTracks(message.getGuild().getId(),
-                    10);
+                    null, 10);
             if (!topMap.isEmpty()) {
                 embedBuilder.setThumbnail((topMap.entrySet().iterator().next().getKey().getAlbumImageUrl()));
             }
@@ -42,8 +42,8 @@ public class TopCommand extends Command {
                 }
             });
         } else if (!message.getMentionedMembers().isEmpty()) {
-            final Map<SpotifyTrack, Integer> topMap = getBot().getDatabase()
-                    .getTopTracksByUser(message.getMentionedMembers().get(0).getId(), message.getGuild().getId(), 10);
+            final Map<SpotifyTrack, Integer> topMap = getBot().getDatabase().getTopTracks(message.getGuild().getId(),
+                    message.getMentionedMembers().get(0).getId(), 10);
             embedBuilder.setTitle("Top 10 Spotify Tracks");
             if (!topMap.isEmpty()) {
                 embedBuilder.setThumbnail(topMap.keySet().iterator().next().getAlbumImageUrl());

@@ -29,14 +29,14 @@ public class MySqlDatabase implements Database {
             final PreparedStatement preparedStatement = connection.prepareStatement(
                     "CREATE TABLE IF NOT EXISTS `Listens` ( `Id` INT NOT NULL AUTO_INCREMENT , `Timestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , `TrackId` VARCHAR(22) NOT NULL , `GuildId` VARCHAR(100) NOT NULL , `UserId` VARCHAR(100) NOT NULL , INDEX `Id` (`Id`));");
             preparedStatement.executeUpdate();
-        } catch (SQLException ex) {
+        } catch (final SQLException ex) {
             ex.printStackTrace();
         }
         try (final Connection connection = getConnection()) {
             final PreparedStatement preparedStatement = connection.prepareStatement(
                     "CREATE TABLE IF NOT EXISTS `Tracks` ( `Id` VARCHAR(22) NOT NULL , `Artists` VARCHAR(200) NOT NULL , `AlbumImageUrl` VARCHAR(2083) NOT NULL , `AlbumTitle` VARCHAR(200) NOT NULL , `TrackTitle` VARCHAR(200) NOT NULL , `Duration` BIGINT UNSIGNED NOT NULL , PRIMARY KEY (`Id`));");
             preparedStatement.executeUpdate();
-        } catch (SQLException ex) {
+        } catch (final SQLException ex) {
             ex.printStackTrace();
         }
     }
@@ -103,41 +103,25 @@ public class MySqlDatabase implements Database {
     }
 
     @Override
-    public Map<SpotifyTrack, Integer> getTopTracks(final String guildId, final Integer count) {
+    public Map<SpotifyTrack, Integer> getTopTracks(final String guildId, final String userId, final Integer count) {
         final Map<SpotifyTrack, Integer> topMap = new LinkedHashMap<>();
         try (final Connection connection = getConnection()) {
-            final PreparedStatement preparedStatement = connection.prepareStatement(
-                    "SELECT Tracks.*, COUNT(*) AS Listener FROM `Listens` INNER JOIN Tracks ON Listens.TrackId=Tracks.Id WHERE Listens.GuildId=? GROUP BY `TrackId` ORDER BY COUNT(*) DESC LIMIT ?");
+            final PreparedStatement preparedStatement = connection.prepareStatement(userId == null
+                    ? "SELECT Tracks.*, COUNT(*) AS Listener FROM `Listens` INNER JOIN Tracks ON Listens.TrackId=Tracks.Id WHERE Listens.GuildId=? GROUP BY `TrackId` ORDER BY COUNT(*) DESC LIMIT ?"
+                    : "SELECT Tracks.*, COUNT(*) AS Listener FROM `Listens` INNER JOIN Tracks ON Listens.TrackId=Tracks.Id WHERE GuildId=? AND UserId=? GROUP BY `TrackId` ORDER BY COUNT(*) DESC LIMIT ?");
             preparedStatement.setString(1, guildId);
-            preparedStatement.setInt(2, count);
+            if (userId != null) {
+                preparedStatement.setString(2, userId);
+                preparedStatement.setInt(3, count);
+            } else {
+                preparedStatement.setInt(2, count);
+            }
 
             final ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
                 final SpotifyTrack spotifyTrack = getTrackFromResultSet(resultSet);
                 final Integer listener = resultSet.getInt("Listener");
                 topMap.put(spotifyTrack, listener);
-            }
-        } catch (final SQLException ex) {
-            ex.printStackTrace();
-        }
-        return topMap;
-    }
-
-    @Override
-    public Map<SpotifyTrack, Integer> getTopTracksByUser(final String userId, final String guildId,
-            final Integer count) {
-        final Map<SpotifyTrack, Integer> topMap = new LinkedHashMap<>();
-        try (final Connection connection = getConnection()) {
-            final PreparedStatement preparedStatement = connection.prepareStatement(
-                    "SELECT Tracks.*, COUNT(*) AS Listener FROM `Listens` INNER JOIN Tracks ON Listens.TrackId=Tracks.Id WHERE GuildId=? AND UserId=? GROUP BY `TrackId` ORDER BY COUNT(*) DESC LIMIT ?");
-            preparedStatement.setString(1, guildId);
-            preparedStatement.setString(2, userId);
-            preparedStatement.setInt(3, count);
-
-            final ResultSet resultSet = preparedStatement.executeQuery();
-            while (resultSet.next()) {
-                final SpotifyTrack spotifyTrack = getTrackFromResultSet(resultSet);
-                topMap.put(spotifyTrack, resultSet.getInt("Listener"));
             }
         } catch (final SQLException ex) {
             ex.printStackTrace();
@@ -180,36 +164,89 @@ public class MySqlDatabase implements Database {
     }
 
     @Override
-    public Long getListenTime(String guildId, String userId) {
-        try (final Connection connection = getConnection()){
-            final PreparedStatement preparedStatement = connection.prepareStatement(userId == null ? "SELECT SUM(Tracks.Duration) AS Duration FROM `Listens` INNER JOIN Tracks ON Listens.TrackId=Tracks.Id WHERE Listens.GuildId=?" : "SELECT SUM(Tracks.Duration) AS Duration FROM `Listens` INNER JOIN Tracks ON Listens.TrackId=Tracks.Id WHERE Listens.GuildId=? AND Listens.UserId=?");
+    public Long getListenTime(final String guildId, final String userId) {
+        try (final Connection connection = getConnection()) {
+            final PreparedStatement preparedStatement = connection.prepareStatement(userId == null
+                    ? "SELECT SUM(Tracks.Duration) AS Duration FROM `Listens` INNER JOIN Tracks ON Listens.TrackId=Tracks.Id WHERE Listens.GuildId=?"
+                    : "SELECT SUM(Tracks.Duration) AS Duration FROM `Listens` INNER JOIN Tracks ON Listens.TrackId=Tracks.Id WHERE Listens.GuildId=? AND Listens.UserId=?");
             preparedStatement.setString(1, guildId);
-            if(userId != null){
+            if (userId != null) {
                 preparedStatement.setString(2, userId);
             }
             final ResultSet resultSet = preparedStatement.executeQuery();
-            if(resultSet.next()){
+            if (resultSet.next()) {
                 return resultSet.getLong("Duration");
             }
-        } catch(SQLException ex){
+        } catch (final SQLException ex) {
             ex.printStackTrace();
         }
         return 0L;
     }
 
     @Override
-    public Map<String, Long> getTopListenersByTime(String guildId, Integer count) {
+    public Map<String, Long> getTopListenersByTime(final String guildId, final Integer count) {
         final Map<String, Long> topMap = new LinkedHashMap<>();
-        try (final Connection connection = getConnection()){
-            final PreparedStatement preparedStatement = connection.prepareStatement("SELECT SUM(Tracks.Duration) AS Duration, Listens.UserId  FROM `Listens` INNER JOIN Tracks ON Listens.TrackId=Tracks.Id WHERE Listens.GuildId=? GROUP BY Listens.UserId ORDER BY Duration DESC LIMIT ?");
+        try (final Connection connection = getConnection()) {
+            final PreparedStatement preparedStatement = connection.prepareStatement(
+                    "SELECT SUM(Tracks.Duration) AS Duration, Listens.UserId  FROM `Listens` INNER JOIN Tracks ON Listens.TrackId=Tracks.Id WHERE Listens.GuildId=? GROUP BY Listens.UserId ORDER BY Duration DESC LIMIT ?");
             preparedStatement.setString(1, guildId);
             preparedStatement.setInt(2, count);
 
             final ResultSet resultSet = preparedStatement.executeQuery();
-            while(resultSet.next()){
+            while (resultSet.next()) {
                 topMap.put(resultSet.getString("UserId"), resultSet.getLong("Duration"));
             }
-        } catch(SQLException ex){
+        } catch (final SQLException ex) {
+            ex.printStackTrace();
+        }
+        return topMap;
+    }
+
+    @Override
+    public Map<String, Integer> getTopArtists(final String guildId, final String userId, final Integer count) {
+        final Map<String, Integer> topMap = new LinkedHashMap<>();
+        try (final Connection connection = getConnection()) {
+            final PreparedStatement preparedStatement = connection.prepareStatement(userId == null
+                    ? "SELECT Tracks.Artists, COUNT(*) AS Listener FROM `Listens` INNER JOIN Tracks ON Listens.TrackId=Tracks.Id WHERE Listens.GuildId=? GROUP BY `Artists` ORDER BY COUNT(*) DESC LIMIT ?"
+                    : "SELECT Tracks.Artists, COUNT(*) AS Listener FROM `Listens` INNER JOIN Tracks ON Listens.TrackId=Tracks.Id WHERE Listens.GuildId=? AND Listens.UserId=? GROUP BY `Artists` ORDER BY COUNT(*) DESC LIMIT ?");
+            preparedStatement.setString(1, guildId);
+            if (userId != null) {
+                preparedStatement.setString(2, userId);
+                preparedStatement.setInt(3, count);
+            } else {
+                preparedStatement.setInt(2, count);
+            }
+
+            final ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                topMap.put(resultSet.getString("Artists"), resultSet.getInt("Listener"));
+            }
+        } catch (final SQLException ex) {
+            ex.printStackTrace();
+        }
+        return topMap;
+    }
+
+    @Override
+    public Map<String, Integer> getTopAlbum(String guildId, String userId, Integer count) {
+        final Map<String, Integer> topMap = new LinkedHashMap<>();
+        try (final Connection connection = getConnection()) {
+            final PreparedStatement preparedStatement = connection.prepareStatement(userId == null
+                    ? "SELECT Tracks.AlbumTitle, COUNT(*) AS Listener FROM `Listens` INNER JOIN Tracks ON Listens.TrackId=Tracks.Id WHERE Listens.GuildId=? GROUP BY `AlbumTitle` ORDER BY COUNT(*) DESC LIMIT ?"
+                    : "SELECT Tracks.AlbumTitle, COUNT(*) AS Listener FROM `Listens` INNER JOIN Tracks ON Listens.TrackId=Tracks.Id WHERE Listens.GuildId=? AND Listens.UserId=? GROUP BY `AlbumTitle` ORDER BY COUNT(*) DESC LIMIT ?");
+            preparedStatement.setString(1, guildId);
+            if (userId != null) {
+                preparedStatement.setString(2, userId);
+                preparedStatement.setInt(3, count);
+            } else {
+                preparedStatement.setInt(2, count);
+            }
+
+            final ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                topMap.put(resultSet.getString("AlbumTitle"), resultSet.getInt("Listener"));
+            }
+        } catch (SQLException ex) {
             ex.printStackTrace();
         }
         return topMap;
