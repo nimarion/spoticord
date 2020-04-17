@@ -7,4 +7,4 @@ FROM openjdk:14-jdk-slim
 COPY --from=build /usr/src/app/target/spoticord-*-SNAPSHOT-shaded.jar spoticord.jar
 
 EXPOSE 8080  
-ENTRYPOINT ["java", "-jar","spoticord.jar"]
+ENTRYPOINT ["java", "-jar", "--enable-preview", "spoticord.jar" ]
