@@ -17,12 +17,12 @@ public class RandomCommand extends Command {
             return;
         }
         final EmbedBuilder embedBuilder = getEmbed(message.getGuild(), message.getAuthor());
-        embedBuilder.setThumbnail(spotifyTrack.getAlbumImageUrl());
+        embedBuilder.setThumbnail(spotifyTrack.albumImageUrl());
         embedBuilder.setTitle("Random Track");
-        embedBuilder.addField("Title", spotifyTrack.getTrackTitle(), true);
-        embedBuilder.addField("Artist", spotifyTrack.getArtists(), true);
-        embedBuilder.addField("Album", spotifyTrack.getAlbumTitle(), true);
+        embedBuilder.addField("Title", spotifyTrack.trackTitle(), true);
+        embedBuilder.addField("Artist", spotifyTrack.artists(), true);
+        embedBuilder.addField("Album", spotifyTrack.albumTitle(), true);
         message.getChannel().sendMessage(embedBuilder.build()).queue();
-        message.getChannel().sendMessage("https://open.spotify.com/track/" + spotifyTrack.getId()).queue();
+        message.getChannel().sendMessage("https://open.spotify.com/track/" + spotifyTrack.id()).queue();
     }
 }

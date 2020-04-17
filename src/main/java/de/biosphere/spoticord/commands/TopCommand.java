@@ -23,14 +23,14 @@ public class TopCommand extends Command {
             final Map<SpotifyTrack, Integer> topMap = getBot().getDatabase().getTopTracks(message.getGuild().getId(),
                     null, 10);
             if (!topMap.isEmpty()) {
-                embedBuilder.setThumbnail((topMap.entrySet().iterator().next().getKey().getAlbumImageUrl()));
+                embedBuilder.setThumbnail((topMap.entrySet().iterator().next().getKey().albumImageUrl()));
             }
             embedBuilder.setTitle("Top 10 Spotify Tracks");
 
             int count = 1;
             for (SpotifyTrack spotifyTrack : topMap.keySet()) {
                 embedBuilder.appendDescription(String.format("%s. **%s** by %s (%s) \n", count,
-                        spotifyTrack.getTrackTitle(), spotifyTrack.getArtists(), topMap.get(spotifyTrack)));
+                        spotifyTrack.trackTitle(), spotifyTrack.artists(), topMap.get(spotifyTrack)));
                 count++;
             }
         } else if (args[0].equalsIgnoreCase("user")) {
@@ -46,12 +46,12 @@ public class TopCommand extends Command {
                     message.getMentionedMembers().get(0).getId(), 10);
             embedBuilder.setTitle("Top 10 Spotify Tracks");
             if (!topMap.isEmpty()) {
-                embedBuilder.setThumbnail(topMap.keySet().iterator().next().getAlbumImageUrl());
+                embedBuilder.setThumbnail(topMap.keySet().iterator().next().albumImageUrl());
             }
             int count = 1;
             for (SpotifyTrack spotifyTrack : topMap.keySet()) {
                 embedBuilder.appendDescription(String.format("%s. **%s** by %s (%s) \n", count,
-                        spotifyTrack.getTrackTitle(), spotifyTrack.getArtists(), topMap.get(spotifyTrack)));
+                        spotifyTrack.trackTitle(), spotifyTrack.artists(), topMap.get(spotifyTrack)));
                 count++;
             }
         } else {

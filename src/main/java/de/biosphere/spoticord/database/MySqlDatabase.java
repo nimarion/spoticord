@@ -46,17 +46,17 @@ public class MySqlDatabase implements Database {
         try (final Connection connection = getConnection()) {
             final PreparedStatement preparedStatement = connection.prepareStatement(
                     "INSERT IGNORE INTO `Tracks` (`Id`, `Artists`, `AlbumImageUrl`, `AlbumTitle`, `TrackTitle`, `Duration`) VALUES (?, ?, ?, ?, ?, ?)");
-            preparedStatement.setString(1, spotifyTrack.getId());
-            preparedStatement.setString(2, spotifyTrack.getArtists());
-            preparedStatement.setString(3, spotifyTrack.getAlbumImageUrl());
-            preparedStatement.setString(4, spotifyTrack.getAlbumTitle());
-            preparedStatement.setString(5, spotifyTrack.getTrackTitle());
-            preparedStatement.setLong(6, spotifyTrack.getDuration());
+            preparedStatement.setString(1, spotifyTrack.id());
+            preparedStatement.setString(2, spotifyTrack.artists());
+            preparedStatement.setString(3, spotifyTrack.albumImageUrl());
+            preparedStatement.setString(4, spotifyTrack.albumTitle());
+            preparedStatement.setString(5, spotifyTrack.trackTitle());
+            preparedStatement.setLong(6, spotifyTrack.duration());
             preparedStatement.execute();
 
             final PreparedStatement preparedStatement2 = connection.prepareStatement(
                     "INSERT INTO `Listens` (`Id`, `Timestamp`, `TrackId`, `GuildId`, `UserId`) VALUES (NULL, CURRENT_TIMESTAMP, ?, ?, ?)");
-            preparedStatement2.setString(1, spotifyTrack.getId());
+            preparedStatement2.setString(1, spotifyTrack.id());
             preparedStatement2.setString(2, guildId);
             preparedStatement2.setString(3, userId);
             preparedStatement2.execute();
@@ -257,13 +257,9 @@ public class MySqlDatabase implements Database {
     }
 
     private SpotifyTrack getTrackFromResultSet(final ResultSet resultSet) throws SQLException {
-        final SpotifyTrack spotifyTrack = new SpotifyTrack();
-        spotifyTrack.setId(resultSet.getString("Id"));
-        spotifyTrack.setArtists(resultSet.getString("Artists"));
-        spotifyTrack.setAlbumImageUrl(resultSet.getString("AlbumImageUrl"));
-        spotifyTrack.setAlbumTitle(resultSet.getString("AlbumTitle"));
-        spotifyTrack.setTrackTitle(resultSet.getString("TrackTitle"));
-        spotifyTrack.setDuration(resultSet.getLong("Duration"));
+        final SpotifyTrack spotifyTrack = new SpotifyTrack(resultSet.getString("Id"),
+                resultSet.getString("Artists"), resultSet.getString("AlbumTitle"), resultSet.getString("TrackTitle"),
+                        resultSet.getString("AlbumImageUrl"), resultSet.getLong("Duration"));
         return spotifyTrack;
     }
 
