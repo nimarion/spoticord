@@ -20,8 +20,10 @@ public interface Database extends AutoCloseable {
 
     Map<String, Long> getTopListenersByTime(final String guildId, final Integer count);
 
-    Map<SpotifyTrack, Integer> getTopTracks(final String guildId, final Integer count);
+    Map<SpotifyTrack, Integer> getTopTracks(final String guildId, final String userId, final Integer count);
 
-    Map<SpotifyTrack, Integer> getTopTracksByUser(final String userId, final String guildId, final Integer count);
+    Map<String, Integer> getTopArtists(final String guildId, final String userId, final Integer count);
+
+    Map<String, Integer> getTopAlbum(final String guildId, final String userId, final Integer count);
 
 }

@@ -38,13 +38,10 @@ public class DiscordUserUpdateGameListener extends ListenerAdapter {
         }
         lastActivitiesMap.put(event.getMember(), event.getNewActivity());
 
-        SpotifyTrack spotifyTrack = new SpotifyTrack();
-        spotifyTrack.setId(richPresence.getSyncId());
-        spotifyTrack.setAlbumImageUrl(richPresence.getLargeImage().getUrl());
-        spotifyTrack.setAlbumTitle(richPresence.getLargeImage().getText());
-        spotifyTrack.setArtists(richPresence.getState());
-        spotifyTrack.setTrackTitle(richPresence.getDetails());
-        spotifyTrack.setDuration(richPresence.getTimestamps().getEnd() - richPresence.getTimestamps().getStart());
+        SpotifyTrack spotifyTrack = new SpotifyTrack(richPresence.getSyncId(), richPresence.getState(),
+                richPresence.getLargeImage().getText(), richPresence.getDetails(),
+                richPresence.getLargeImage().getUrl(),
+                richPresence.getTimestamps().getEnd() - richPresence.getTimestamps().getStart());
 
         bot.getDatabase().insertTrackData(spotifyTrack, event.getMember().getId(), event.getGuild().getId());
     }
