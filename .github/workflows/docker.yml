@@ -11,9 +11,8 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - name: Build Docker Image
-        uses: docker/build-push-action@v1
-        with:
-          username: ${{ github.repository_owner }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-          repository: spoticord/spoticord
-          registry: docker.pkg.github.com
+        run: docker build -t docker.pkg.github.com/biospheere/spoticord/spoticord . 
+      - name: Push the image to GPR
+        run: |
+          docker login docker.pkg.github.com -u publisher -p "${{ secrets.GITHUB_TOKEN }}"
+          docker push docker.pkg.github.com/biospheere/spoticord/spoticord
