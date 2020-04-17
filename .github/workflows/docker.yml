@@ -13,6 +13,6 @@ jobs:
       - name: Build Docker Image
         uses: docker/build-push-action@v1
         with:
-          username: github.repository_owner
+          username: Biospheere
           password: ${{ secrets.GITHUB_TOKEN }}
           repository: spoticord/spoticord
