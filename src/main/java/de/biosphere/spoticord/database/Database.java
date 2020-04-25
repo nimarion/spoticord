@@ -26,4 +26,6 @@ public interface Database extends AutoCloseable {
 
     Map<String, Integer> getTopAlbum(final String guildId, final String userId, final Integer count);
 
+    void deleteListens(final String guildId, final String userId);
+
 }
