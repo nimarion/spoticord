@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/Biospheere/spoticord.svg?branch=master)](https://travis-ci.org/Biospheere/spoticord)
+[![Build Status](https://github.com/biospheere/spoticord/workflows/Build/badge.svg?branch=master)](https://github.com/biospheere/spoticord/actions)
 [![GitHub contributors](https://img.shields.io/github/contributors/biospheere/spoticord.svg)](https://github.com/Biospheere/spoticord/graphs/contributors/)
 [![c0debase Discord](https://discordapp.com/api/guilds/361448651748540426/embed.png)](https://discord.gg/BDwBeZ3)
 
@@ -7,26 +7,40 @@
 View your guild's Spotify listening activity.
 
 
-## :zap: Commands 
+## ⚡Commands 
 
 - `top` - View the top 10 tracks from the current guild.
 - `random` - Get a random song from the current guild.
-
-![](https://i.imgur.com/ei1Mnkp.png)
+- `album` - View the top 10 album from the current guild.
+- `artists` - View the top 10 artists from the current guild.
+- `time` - See how much time you listened to music on Spotify
 
 ## 🔰 Prerequisites
 
-- Docker 
-- Discord Bot Token 
+- [Docker](https://docs.docker.com/get-docker/) 
+- [Docker Compose](https://docs.docker.com/compose/install/)
 
 ## 🛠 Installation
 
+1. Follow the [Docker CE install guide](https://docs.docker.com/install/) and the [Docker Compose install guide](https://docs.docker.com/compose/install/), which illustrates multiple installation options for each OS.
+2. Set up your environment variables/secrets in `.env` file
 ```
-docker run --name some-mongo -d mongo
-docker run --name spot -p 8080:8080 --link some-mongo:some-mongo -e MONGO_HOST='some-mongo' -e DISCORD_TOKEN='YOUR_TOKEN' biospheere/spoticord
+MYSQL_ROOT_PASSWORD=???
+MYSQL_DATABASE=Tracks
+DATABASE_PASSWORD=???
+DATABASE_USER=root
+DATABASE_HOST=mysql
+DISCORD_TOKEN=???
 ```
 
-## ⚖ [License](https://github.com/Biospheere/spoticord/blob/master/LICENSE)
+3. Run the Docker App with `docker-compose up -d`
+4. That's it! 🎉
+
+## 📷 Screenshots
+
+![](https://i.imgur.com/ei1Mnkp.png)
+
+## ⚖ [License](LICENSE)
 MIT © [Niklas](https://github.com/Biospheere/)
 
  
