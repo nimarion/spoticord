@@ -3,10 +3,10 @@ package de.biosphere.spoticord.handler;
 import de.biosphere.spoticord.core.Spoticord;
 import de.biosphere.spoticord.database.model.SpotifyTrack;
 import net.dv8tion.jda.api.entities.Activity;
-import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.RichPresence;
 import net.dv8tion.jda.api.events.user.UserActivityStartEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.jodah.expiringmap.ExpirationPolicy;
 import net.jodah.expiringmap.ExpiringMap;
 
 import javax.annotation.Nonnull;
@@ -16,13 +16,12 @@ import java.util.concurrent.TimeUnit;
 public class DiscordUserUpdateGameListener extends ListenerAdapter {
 
     private final Spoticord bot;
-    private final Map<Member, Activity> lastActivitiesMap;
+    private final Map<String, String> lastActivitiesMap;
 
     public DiscordUserUpdateGameListener(final Spoticord instance) {
         this.bot = instance;
-        final ExpiringMap.Builder<Object, Object> mapBuilder = ExpiringMap.builder();
-        mapBuilder.expiration(7, TimeUnit.MINUTES).build();
-        this.lastActivitiesMap = mapBuilder.build();
+        this.lastActivitiesMap = ExpiringMap.builder().expiration(7, TimeUnit.MINUTES)
+                .expirationPolicy(ExpirationPolicy.ACCESSED).build();
     }
 
     @Override
@@ -35,11 +34,11 @@ public class DiscordUserUpdateGameListener extends ListenerAdapter {
         if (richPresence == null || richPresence.getDetails() == null || richPresence.getSyncId() == null)
             return;
 
-        if (lastActivitiesMap.containsKey(event.getMember()) && lastActivitiesMap.get(event.getMember())
-                .asRichPresence().getDetails().equalsIgnoreCase(richPresence.getDetails())) {
+        if (lastActivitiesMap.containsKey(event.getMember().getId())
+                && lastActivitiesMap.get(event.getMember().getId()).equalsIgnoreCase(richPresence.getSyncId())) {
             return;
         }
-        lastActivitiesMap.put(event.getMember(), event.getNewActivity());
+        lastActivitiesMap.put(event.getMember().getId(), richPresence.getSyncId());
 
         SpotifyTrack spotifyTrack = new SpotifyTrack(richPresence.getSyncId(), richPresence.getState(),
                 richPresence.getLargeImage().getText(), richPresence.getDetails(),
