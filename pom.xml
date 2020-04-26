@@ -29,7 +29,7 @@
         <dependency>
             <groupId>net.dv8tion</groupId>
             <artifactId>JDA</artifactId>
-            <version>4.1.1_136</version>
+            <version>4.1.1_137</version>
             <exclusions>
                 <exclusion>
                     <groupId>club.minnced</groupId>
@@ -67,6 +67,13 @@
             <artifactId>mysql-connector-java</artifactId>
             <version>8.0.19</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/net.jodah/expiringmap -->
+        <dependency>
+            <groupId>net.jodah</groupId>
+            <artifactId>expiringmap</artifactId>
+            <version>0.5.9</version>
+        </dependency>
+
     </dependencies>
 
     <build>

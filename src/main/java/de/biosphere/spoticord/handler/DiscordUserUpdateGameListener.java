@@ -7,10 +7,11 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.RichPresence;
 import net.dv8tion.jda.api.events.user.UserActivityStartEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.jodah.expiringmap.ExpiringMap;
 
 import javax.annotation.Nonnull;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 public class DiscordUserUpdateGameListener extends ListenerAdapter {
 
@@ -19,7 +20,9 @@ public class DiscordUserUpdateGameListener extends ListenerAdapter {
 
     public DiscordUserUpdateGameListener(final Spoticord instance) {
         this.bot = instance;
-        this.lastActivitiesMap = new HashMap<>();
+        final ExpiringMap.Builder<Object, Object> mapBuilder = ExpiringMap.builder();
+        mapBuilder.expiration(7, TimeUnit.MINUTES).build();
+        this.lastActivitiesMap = mapBuilder.build();
     }
 
     @Override

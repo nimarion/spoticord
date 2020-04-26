@@ -29,8 +29,8 @@ public class TopCommand extends Command {
 
             int count = 1;
             for (SpotifyTrack spotifyTrack : topMap.keySet()) {
-                embedBuilder.appendDescription(String.format("%s. **%s** by %s (%s) \n", count,
-                        spotifyTrack.trackTitle(), spotifyTrack.artists(), topMap.get(spotifyTrack)));
+                embedBuilder.appendDescription(String.format("%s. **[%s](https://open.spotify.com/track/%s)** by %s (%s) \n", count,
+                        spotifyTrack.trackTitle(), spotifyTrack.id(), spotifyTrack.artists(), topMap.get(spotifyTrack)));
                 count++;
             }
         } else if (args[0].equalsIgnoreCase("user")) {
@@ -50,8 +50,8 @@ public class TopCommand extends Command {
             }
             int count = 1;
             for (SpotifyTrack spotifyTrack : topMap.keySet()) {
-                embedBuilder.appendDescription(String.format("%s. **%s** by %s (%s) \n", count,
-                        spotifyTrack.trackTitle(), spotifyTrack.artists(), topMap.get(spotifyTrack)));
+                embedBuilder.appendDescription(String.format("%s. **[%s](https://open.spotify.com/track/%s)** by %s (%s) \n", count,
+                        spotifyTrack.trackTitle(), spotifyTrack.id(), spotifyTrack.artists(), topMap.get(spotifyTrack)));
                 count++;
             }
         } else {

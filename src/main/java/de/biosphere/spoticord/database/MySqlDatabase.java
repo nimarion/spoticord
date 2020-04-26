@@ -228,7 +228,7 @@ public class MySqlDatabase implements Database {
     }
 
     @Override
-    public Map<String, Integer> getTopAlbum(String guildId, String userId, Integer count) {
+    public Map<String, Integer> getTopAlbum(final String guildId, final String userId, final Integer count) {
         final Map<String, Integer> topMap = new LinkedHashMap<>();
         try (final Connection connection = getConnection()) {
             final PreparedStatement preparedStatement = connection.prepareStatement(userId == null
@@ -246,7 +246,7 @@ public class MySqlDatabase implements Database {
             while (resultSet.next()) {
                 topMap.put(resultSet.getString("AlbumTitle"), resultSet.getInt("Listener"));
             }
-        } catch (SQLException ex) {
+        } catch (final SQLException ex) {
             ex.printStackTrace();
         }
         return topMap;
@@ -261,6 +261,18 @@ public class MySqlDatabase implements Database {
                 resultSet.getString("Artists"), resultSet.getString("AlbumTitle"), resultSet.getString("TrackTitle"),
                         resultSet.getString("AlbumImageUrl"), resultSet.getLong("Duration"));
         return spotifyTrack;
+    }
+
+    @Override
+    public void deleteListens(final String guildId, final String userId) {
+        try(final Connection connection = getConnection()){
+            final PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM Listens WHERE GuildId=? AND UserId=?");
+            preparedStatement.setString(1, guildId);
+            preparedStatement.setString(2, userId);
+            preparedStatement.execute();
+        } catch(SQLException ex){
+            ex.printStackTrace();
+        }
     }
 
     @Override
