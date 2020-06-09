@@ -27,7 +27,7 @@ public class TimeCommand extends Command {
                 final Member member = message.getGuild().getMemberById(k);
                 if (member != null) {
                     embedBuilder
-                            .appendDescription(String.format("%s %s \n", member.getAsMention(), formatDuration(v)));
+                            .appendDescription(String.format("%s#%s %s \n", member.getEffectiveName(), member.getUser().getDiscriminator(), formatDuration(v)));
                 }
             });
         } else if (!message.getMentionedMembers().isEmpty()) {
