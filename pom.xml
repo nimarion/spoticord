@@ -49,12 +49,6 @@
             <artifactId>reflections</artifactId>
             <version>0.9.12</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/io.javalin/javalin/3.1.0 -->
-        <dependency>
-            <groupId>io.javalin</groupId>
-            <artifactId>javalin</artifactId>
-            <version>3.8.0</version>
-        </dependency>
         <!-- https://mvnrepository.com/artifact/io.prometheus/simpleclient_httpserver -->
         <dependency>
             <groupId>io.prometheus</groupId>
@@ -73,7 +67,6 @@
             <artifactId>expiringmap</artifactId>
             <version>0.5.9</version>
         </dependency>
-
     </dependencies>
 
     <build>

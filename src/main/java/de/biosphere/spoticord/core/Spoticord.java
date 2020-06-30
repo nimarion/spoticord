@@ -7,10 +7,10 @@ import de.biosphere.spoticord.database.Database;
 import de.biosphere.spoticord.database.MySqlDatabase;
 import de.biosphere.spoticord.handler.DiscordUserUpdateGameListener;
 import de.biosphere.spoticord.handler.StatisticsHandlerCollector;
-import io.javalin.Javalin;
 import io.prometheus.client.exporter.HTTPServer;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.requests.GatewayIntent;
@@ -27,7 +27,6 @@ public class Spoticord {
     private final JDA jda;
     private final Database database;
     private final CommandManager commandManager;
-    private final Javalin javalin;
 
     public Spoticord() throws Exception {
         final long startTime = System.currentTimeMillis();
@@ -51,20 +50,8 @@ public class Spoticord {
             logger.info("Prometheus set up!");
         }
 
-        javalin = Javalin.create().start(8080);
-        // TODO: Javalin endpoints
-        /*javalin.get("/top", context -> context.json(database.getGlobalTop(10)));
-        javalin.get("/top/:id", context -> context.json(database.getTotalTop(10,
-        context.pathParam("id")))); javalin.get("/random", context ->
-        context.json(database.getRandomTrack()));
-         
-        javalin.config.addStaticFiles("src/main/resources/static", Location.EXTERNAL);
-        javalin.config.addSinglePageRoot("/", "src/main/resources/static/index.html", Location.EXTERNAL);
-        logger.info("Javalin set up!");*/
-
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             jda.shutdown();
-            javalin.stop();
             try {
                 database.close();
             } catch (final Exception e) {
@@ -85,6 +72,11 @@ public class Spoticord {
             final JDABuilder jdaBuilder = JDABuilder.create(GatewayIntent.GUILD_PRESENCES, GatewayIntent.GUILD_MEMBERS,
                     GatewayIntent.GUILD_MESSAGES);
             jdaBuilder.setToken(System.getenv("DISCORD_TOKEN"));
+            if(System.getenv("DISCORD_GAME") != null){
+                jdaBuilder.setActivity(Activity.playing(System.getenv("DISCORD_GAME")));
+            } else {
+                jdaBuilder.setActivity(Activity.playing("🎶"));
+            }
             jdaBuilder.setMemberCachePolicy(MemberCachePolicy.ONLINE);
             jdaBuilder.disableCache(EnumSet.of(CacheFlag.VOICE_STATE, CacheFlag.EMOTE));
             jdaBuilder.addEventListeners(new ListenerAdapter() {
