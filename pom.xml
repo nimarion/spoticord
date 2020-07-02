@@ -23,13 +23,13 @@
         <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
-            <version>3.4.3</version>
+            <version>3.4.5</version>
         </dependency>
         <!-- https://bintray.com/dv8fromtheworld/maven/JDA -->
         <dependency>
             <groupId>net.dv8tion</groupId>
             <artifactId>JDA</artifactId>
-            <version>4.1.1_140</version>
+            <version>4.2.0_172</version>
             <exclusions>
                 <exclusion>
                     <groupId>club.minnced</groupId>
@@ -49,17 +49,11 @@
             <artifactId>reflections</artifactId>
             <version>0.9.12</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/io.javalin/javalin/3.1.0 -->
-        <dependency>
-            <groupId>io.javalin</groupId>
-            <artifactId>javalin</artifactId>
-            <version>3.8.0</version>
-        </dependency>
         <!-- https://mvnrepository.com/artifact/io.prometheus/simpleclient_httpserver -->
         <dependency>
             <groupId>io.prometheus</groupId>
             <artifactId>simpleclient_httpserver</artifactId>
-            <version>0.8.1</version>
+            <version>0.9.0</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->
         <dependency>
@@ -73,7 +67,6 @@
             <artifactId>expiringmap</artifactId>
             <version>0.5.9</version>
         </dependency>
-
     </dependencies>
 
     <build>
@@ -99,7 +92,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.2.3</version>
+                <version>3.2.4</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
