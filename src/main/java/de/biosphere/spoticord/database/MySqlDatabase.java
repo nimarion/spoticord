@@ -108,12 +108,13 @@ public class MySqlDatabase implements Database {
     }
 
     @Override
-    public Map<SpotifyTrack, Integer> getTopTracks(final String guildId, final String userId, final Integer count) {
+    public Map<SpotifyTrack, Integer> getTopTracks(final String guildId, final String userId, final Integer count, final Integer lastDays) {
         final Map<SpotifyTrack, Integer> topMap = new LinkedHashMap<>();
         try (final Connection connection = getConnection()) {
+            final String lastDaysQuery = lastDays == 0 ? "" : "AND Listens.Timestamp >= DATE(NOW()) - INTERVAL " + lastDays + " DAY ";
             final PreparedStatement preparedStatement = connection.prepareStatement(userId == null
-                    ? "SELECT Tracks.*, COUNT(*) AS Listener FROM `Listens` INNER JOIN Tracks ON Listens.TrackId=Tracks.Id WHERE Listens.GuildId=? GROUP BY `TrackId` ORDER BY COUNT(*) DESC LIMIT ?"
-                    : "SELECT Tracks.*, COUNT(*) AS Listener FROM `Listens` INNER JOIN Tracks ON Listens.TrackId=Tracks.Id WHERE GuildId=? AND UserId=? GROUP BY `TrackId` ORDER BY COUNT(*) DESC LIMIT ?");
+                    ? "SELECT Tracks.*, COUNT(*) AS Listener FROM `Listens` INNER JOIN Tracks ON Listens.TrackId=Tracks.Id WHERE Listens.GuildId=? "+ lastDaysQuery + "GROUP BY `TrackId` ORDER BY COUNT(*) DESC LIMIT ?"
+                    : "SELECT Tracks.*, COUNT(*) AS Listener FROM `Listens` INNER JOIN Tracks ON Listens.TrackId=Tracks.Id WHERE GuildId=? AND UserId=? "+ lastDaysQuery +"GROUP BY `TrackId` ORDER BY COUNT(*) DESC LIMIT ?");
             preparedStatement.setString(1, guildId);
             if (userId != null) {
                 preparedStatement.setString(2, userId);
