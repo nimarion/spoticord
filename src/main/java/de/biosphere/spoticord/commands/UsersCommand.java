@@ -19,7 +19,7 @@ public class UsersCommand extends Command {
         topMap.forEach((k, v) -> {
             final Member member = message.getGuild().getMemberById(k);
             if (member != null) {
-                embedBuilder.appendDescription(String.format("%s (%s) \n", member.getAsMention(), v));
+                embedBuilder.appendDescription(String.format("%s#%s (%s) \n", member.getEffectiveName(), member.getUser().getDiscriminator(), v));
             }
         });
         message.getChannel().sendMessage(embedBuilder.build()).queue();
