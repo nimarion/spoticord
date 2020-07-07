@@ -13,7 +13,7 @@ public class DeleteCommand extends Command {
     public void execute(String[] args, Message message) {
         final EmbedBuilder embedBuilder = getEmbed(message.getGuild(), message.getAuthor());
         if(!message.getMentionedMembers().isEmpty() && message.getMentionedMembers().get(0).getId().equals(message.getAuthor().getId())){
-            getBot().getDatabase().deleteListens(message.getGuild().getId(), message.getAuthor().getId());
+            getBot().getDatabase().getUserDao().deleteUser(message.getGuild().getId(), message.getAuthor().getId());
             embedBuilder.setDescription("Deleted your data");
         } else {
             embedBuilder.setDescription("-delete " + message.getAuthor().getAsMention() + "\n :warning: All your data will be deleted");

@@ -15,23 +15,25 @@ public class ArtistsCommand extends Command {
     public void execute(String[] args, Message message) {
         final EmbedBuilder embedBuilder = getEmbed(message.getGuild(), message.getAuthor());
         if (args.length == 0 || args[0].equalsIgnoreCase("server")) {
-            final Map<String, Integer> topMap = getBot().getDatabase().getTopArtists(message.getGuild().getId(), null,
-                    10);
+            final Map<String, Integer> topMap = getBot().getDatabase().getArtistDao()
+                    .getTopArtists(message.getGuild().getId(), null, 10);
             embedBuilder.setTitle("Top 10 Spotify Artists");
 
             int count = 1;
             for (Map.Entry<String, Integer> entry : topMap.entrySet()) {
-                embedBuilder.appendDescription(String.format("%s. **%s** (%s)\n", count, entry.getKey(), entry.getValue()));
+                embedBuilder
+                        .appendDescription(String.format("%s. **%s** (%s)\n", count, entry.getKey(), entry.getValue()));
                 count++;
             }
         } else if (!message.getMentionedMembers().isEmpty()) {
-            final Map<String, Integer> topMap = getBot().getDatabase()
+            final Map<String, Integer> topMap = getBot().getDatabase().getArtistDao()
                     .getTopArtists(message.getGuild().getId(), message.getMentionedMembers().get(0).getId(), 10);
             embedBuilder.setTitle("Top 10 Spotify Artists");
 
             int count = 1;
             for (Map.Entry<String, Integer> entry : topMap.entrySet()) {
-                embedBuilder.appendDescription(String.format("%s. **%s** (%s)\n", count, entry.getKey(), entry.getValue()));
+                embedBuilder
+                        .appendDescription(String.format("%s. **%s** (%s)\n", count, entry.getKey(), entry.getValue()));
                 count++;
             }
         } else {

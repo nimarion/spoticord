@@ -16,7 +16,7 @@ public class SongsCommand extends Command {
     public void execute(String[] args, Message message) {
         final EmbedBuilder embedBuilder = getEmbed(message.getGuild(), message.getAuthor());
         if(message.getMentionedMembers().isEmpty()){
-            final Map<SpotifyTrack, Integer> topMap = getBot().getDatabase().getTopTracks(message.getGuild().getId(),
+            final Map<SpotifyTrack, Integer> topMap = getBot().getDatabase().getTrackDao().getTopTracks(message.getGuild().getId(),
                     null, 10, 7);
             if (!topMap.isEmpty()) {
                 embedBuilder.setThumbnail((topMap.entrySet().iterator().next().getKey().albumImageUrl()));
@@ -30,7 +30,7 @@ public class SongsCommand extends Command {
                 count++;
             }
         } else {
-            final Map<SpotifyTrack, Integer> topMap = getBot().getDatabase().getTopTracks(message.getGuild().getId(),
+            final Map<SpotifyTrack, Integer> topMap = getBot().getDatabase().getTrackDao().getTopTracks(message.getGuild().getId(),
                     message.getMentionedMembers().get(0).getId(), 10,7 );
             embedBuilder.setTitle("Top 10 Spotify Tracks");
             if (!topMap.isEmpty()) {

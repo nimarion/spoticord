@@ -17,9 +17,9 @@ public class StatsCommand extends Command {
     @Override
     public void execute(String[] args, Message message) {
         final JDA jda = message.getJDA();
-        final Integer trackAmount = getBot().getDatabase().getTrackAmount();
-        final Integer listensAmountGlobal = getBot().getDatabase().getListensAmount(null);
-        final Integer listensAmount = getBot().getDatabase().getListensAmount(message.getGuild().getId());
+        final Integer trackAmount = getBot().getDatabase().getTrackDao().getTrackAmount();
+        final Integer listensAmountGlobal = getBot().getDatabase().getTrackDao().getListensAmount(null);
+        final Integer listensAmount = getBot().getDatabase().getTrackDao().getListensAmount(message.getGuild().getId());
         final long uptime = ManagementFactory.getRuntimeMXBean().getUptime();
         final EmbedBuilder embedBuilder = getEmbed(message.getGuild(), message.getAuthor());
 

@@ -1,5 +1,8 @@
 package de.biosphere.spoticord.commands;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -17,22 +20,30 @@ public class TimeCommand extends Command {
     public void execute(final String[] args, final Message message) {
         final EmbedBuilder embedBuilder = getEmbed(message.getGuild(), message.getAuthor());
         if (args.length == 0) {
-            final Long time = getBot().getDatabase().getListenTime(message.getGuild().getId(), null);
+            final Long time = getBot().getDatabase().getUserDao().getListenTime(message.getGuild().getId(), null);
             final String timeFormat = formatDuration(time);
             embedBuilder.setDescription("Der ganze Server hat bereits " + timeFormat + " Musik gehört");
         } else if (args[0].equalsIgnoreCase("server")) {
-            final Map<String, Long> topMap = getBot().getDatabase().getTopListenersByTime(message.getGuild().getId(),
-                    10);
+            final Map<String, Long> topMap = getBot().getDatabase().getUserDao()
+                    .getTopListenersByTime(message.getGuild().getId(), 10);
             topMap.forEach((k, v) -> {
                 final Member member = message.getGuild().getMemberById(k);
                 if (member != null) {
-                    embedBuilder
-                            .appendDescription(String.format("%s#%s %s \n", member.getEffectiveName(), member.getUser().getDiscriminator(), formatDuration(v)));
+                    embedBuilder.appendDescription(String.format("%s#%s %s \n", member.getEffectiveName(),
+                            member.getUser().getDiscriminator(), formatDuration(v)));
                 }
             });
+        } else if (args[0].equalsIgnoreCase("clock")) {
+            final long date = getBot().getDatabase().getUserDao().getMostListensTime();
+            final Date firstDateRange = new Date(date - 1800 * 1000);
+            final Date secondDateRange = new Date(date + 1800 * 1000);
+            String firstRange = new SimpleDateFormat("HH.mm").format(roundToQuarter(firstDateRange));
+            String secondRange = new SimpleDateFormat("HH.mm").format(roundToQuarter(secondDateRange));
+            embedBuilder.setDescription("Der Server hört am meisten Musik zwischen " + firstRange + " und " + secondRange + " Uhr");
         } else if (!message.getMentionedMembers().isEmpty()) {
             final Member targetMember = message.getMentionedMembers().get(0);
-            final Long time = getBot().getDatabase().getListenTime(message.getGuild().getId(), targetMember.getId());
+            final Long time = getBot().getDatabase().getUserDao().getListenTime(message.getGuild().getId(),
+                    targetMember.getId());
             final String timeFormat = formatDuration(time);
             embedBuilder.setDescription(targetMember.getAsMention() + " hat bereits " + timeFormat + " Musik gehört");
         } else {
@@ -61,6 +72,16 @@ public class TimeCommand extends Command {
         sb.append(" Sekunden");
 
         return (sb.toString());
+    }
+
+    private Date roundToQuarter(final Date date) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+
+        int unroundedMinutes = calendar.get(Calendar.MINUTE);
+        int mod = unroundedMinutes % 15;
+        calendar.add(Calendar.MINUTE, mod < 8 ? -mod : (15 - mod));
+        return calendar.getTime();
     }
 
 }

@@ -1,13 +1,14 @@
-package de.biosphere.spoticord.core;
+package de.biosphere.spoticord;
 
 import java.util.EnumSet;
 
 import de.biosphere.spoticord.commands.CommandManager;
 import de.biosphere.spoticord.database.Database;
-import de.biosphere.spoticord.database.MySqlDatabase;
+import de.biosphere.spoticord.database.impl.mysql.MySqlDatabase;
 import de.biosphere.spoticord.handler.DiscordUserUpdateGameListener;
 import de.biosphere.spoticord.handler.StatisticsHandlerCollector;
 import io.prometheus.client.exporter.HTTPServer;
+import io.sentry.Sentry;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
@@ -32,10 +33,10 @@ public class Spoticord {
         final long startTime = System.currentTimeMillis();
         logger.info("Starting spoticord");
 
-        database = new MySqlDatabase(System.getenv("DATABASE_HOST"), System.getenv("DATABASE_USER"),
-                System.getenv("DATABASE_PASSWORD"),
-                System.getenv("DATABASE_NAME") == null ? "Tracks" : System.getenv("DATABASE_NAME"),
-                System.getenv("DATABASE_PORT") == null ? 3306 : Integer.valueOf(System.getenv("DATABASE_PORT")));
+        database = new MySqlDatabase(Configuration.DATABASE_HOST, Configuration.DATABASE_USER,
+                Configuration.DATABASE_PASSWORD,
+                Configuration.DATABASE_NAME == null ? "Tracks" : Configuration.DATABASE_NAME,
+                Configuration.DATABASE_PORT== null ? 3306 : Integer.valueOf(Configuration.DATABASE_PORT));
         logger.info("Database-Connection set up!");
 
         jda = initializeJDA();
@@ -44,8 +45,8 @@ public class Spoticord {
         commandManager = new CommandManager(this);
         logger.info("Command-Manager set up!");
 
-        if (System.getenv("PROMETHEUS_PORT") != null) {
-            new HTTPServer(Integer.valueOf(System.getenv("PROMETHEUS_PORT")));
+        if (Configuration.PROMETHEUS_PORT != null) {
+            new HTTPServer(Integer.valueOf(Configuration.PROMETHEUS_PORT));
             new StatisticsHandlerCollector(this).register();
             logger.info("Prometheus set up!");
         }
@@ -71,9 +72,9 @@ public class Spoticord {
         try {
             final JDABuilder jdaBuilder = JDABuilder.create(GatewayIntent.GUILD_PRESENCES, GatewayIntent.GUILD_MEMBERS,
                     GatewayIntent.GUILD_MESSAGES);
-            jdaBuilder.setToken(System.getenv("DISCORD_TOKEN"));
-            if(System.getenv("DISCORD_GAME") != null){
-                jdaBuilder.setActivity(Activity.playing(System.getenv("DISCORD_GAME")));
+            jdaBuilder.setToken(Configuration.DISCORD_TOKEN);
+            if(Configuration.DISCORD_GAME != null){
+                jdaBuilder.setActivity(Activity.playing(Configuration.DISCORD_GAME));
             } else {
                 jdaBuilder.setActivity(Activity.playing("🎶"));
             }
@@ -103,5 +104,16 @@ public class Spoticord {
 
     public CommandManager getCommandManager() {
         return commandManager;
+    }
+
+    public static void main(String... args) {
+        if (System.getenv("SENTRY_DSN") != null || System.getProperty("sentry.properties") != null) {
+            Sentry.init();
+        }
+        try {
+            new Spoticord();
+        } catch (Exception exception) {
+            logger.error("Encountered exception while initializing the bot!", exception);
+        }
     }
 }

@@ -15,7 +15,7 @@ public class UsersCommand extends Command {
     @Override
     public void execute(String[] args, Message message) {
         final EmbedBuilder embedBuilder = getEmbed(message.getGuild(), message.getAuthor());
-        final Map<String, Integer> topMap = getBot().getDatabase().getTopListeners(message.getGuild().getId(), 10);
+        final Map<String, Integer> topMap = getBot().getDatabase().getUserDao().getTopUsers(message.getGuild().getId(), 10);
         topMap.forEach((k, v) -> {
             final Member member = message.getGuild().getMemberById(k);
             if (member != null) {

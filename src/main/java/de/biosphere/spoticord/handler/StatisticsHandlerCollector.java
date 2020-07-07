@@ -1,6 +1,6 @@
 package de.biosphere.spoticord.handler;
 
-import de.biosphere.spoticord.core.Spoticord;
+import de.biosphere.spoticord.Spoticord;
 import io.prometheus.client.Collector;
 
 import java.util.ArrayList;

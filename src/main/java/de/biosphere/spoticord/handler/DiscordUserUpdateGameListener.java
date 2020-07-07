@@ -1,6 +1,6 @@
 package de.biosphere.spoticord.handler;
 
-import de.biosphere.spoticord.core.Spoticord;
+import de.biosphere.spoticord.Spoticord;
 import de.biosphere.spoticord.database.model.SpotifyTrack;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.RichPresence;
@@ -45,6 +45,6 @@ public class DiscordUserUpdateGameListener extends ListenerAdapter {
                 richPresence.getLargeImage().getUrl(),
                 richPresence.getTimestamps().getEnd() - richPresence.getTimestamps().getStart());
 
-        bot.getDatabase().insertTrackData(spotifyTrack, event.getMember().getId(), event.getGuild().getId());
+        bot.getDatabase().getTrackDao().insertTrack(spotifyTrack, event.getMember().getId(), event.getGuild().getId());
     }
 }

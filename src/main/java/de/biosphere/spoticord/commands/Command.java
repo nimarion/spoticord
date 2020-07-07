@@ -1,6 +1,6 @@
 package de.biosphere.spoticord.commands;
 
-import de.biosphere.spoticord.core.Spoticord;
+import de.biosphere.spoticord.Spoticord;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
