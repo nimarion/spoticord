@@ -43,5 +43,5 @@ public class ArtistImplMySql implements ArtistDao {
         }
         return topMap;
     }
-    
+
 }

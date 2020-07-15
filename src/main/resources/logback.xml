@@ -1,9 +1,9 @@
 <configuration>
 
-    <logger name="net.dv8tion.jda" level="ERROR"/>
-    <logger name="org.reflections.Reflections" level="ERROR"/>
-    <logger name="com.zaxxer.hikari" level="ERROR"/>
-    <logger name="io.sentry" level="ERROR"/>
+    <logger name="net.dv8tion.jda" level="ERROR" />
+    <logger name="org.reflections.Reflections" level="ERROR" />
+    <logger name="com.zaxxer.hikari" level="ERROR" />
+    <logger name="io.sentry" level="ERROR" />
 
     <appender name="Console" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
@@ -18,8 +18,8 @@
     </appender>
 
     <root level="INFO">
-        <appender-ref ref="Console"/>
-        <appender-ref ref="Sentry"/>
+        <appender-ref ref="Console" />
+        <appender-ref ref="Sentry" />
     </root>
 
 </configuration>

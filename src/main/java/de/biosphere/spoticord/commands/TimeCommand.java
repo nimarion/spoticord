@@ -39,7 +39,8 @@ public class TimeCommand extends Command {
             final Date secondDateRange = new Date(date + 1800 * 1000);
             String firstRange = new SimpleDateFormat("HH.mm").format(roundToQuarter(firstDateRange));
             String secondRange = new SimpleDateFormat("HH.mm").format(roundToQuarter(secondDateRange));
-            embedBuilder.setDescription("Der Server hört am meisten Musik zwischen " + firstRange + " und " + secondRange + " Uhr");
+            embedBuilder.setDescription(
+                    "Der Server hört am meisten Musik zwischen " + firstRange + " und " + secondRange + " Uhr");
         } else if (!message.getMentionedMembers().isEmpty()) {
             final Member targetMember = message.getMentionedMembers().get(0);
             final Long time = getBot().getDatabase().getUserDao().getListenTime(message.getGuild().getId(),

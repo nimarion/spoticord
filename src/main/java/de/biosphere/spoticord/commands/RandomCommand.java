@@ -12,7 +12,8 @@ public class RandomCommand extends Command {
 
     @Override
     public void execute(final String[] args, final Message message) {
-        final SpotifyTrack spotifyTrack = getBot().getDatabase().getTrackDao().getRandomTrack(message.getGuild().getId());
+        final SpotifyTrack spotifyTrack = getBot().getDatabase().getTrackDao()
+                .getRandomTrack(message.getGuild().getId());
         if (spotifyTrack == null) {
             return;
         }

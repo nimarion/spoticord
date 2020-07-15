@@ -99,10 +99,13 @@ public class TrackImplMySql implements TrackDao {
     public Map<SpotifyTrack, Integer> getTopTracks(String guildId, String userId, Integer count, Integer lastDays) {
         final Map<SpotifyTrack, Integer> topMap = new LinkedHashMap<>();
         try (final Connection connection = hikariDataSource.getConnection()) {
-            final String lastDaysQuery = lastDays == 0 ? "" : "AND Listens.Timestamp >= DATE(NOW()) - INTERVAL " + lastDays + " DAY ";
+            final String lastDaysQuery = lastDays == 0 ? ""
+                    : "AND Listens.Timestamp >= DATE(NOW()) - INTERVAL " + lastDays + " DAY ";
             final PreparedStatement preparedStatement = connection.prepareStatement(userId == null
-                    ? "SELECT Tracks.*, COUNT(*) AS Listener FROM `Listens` INNER JOIN Tracks ON Listens.TrackId=Tracks.Id WHERE Listens.GuildId=? "+ lastDaysQuery + "GROUP BY `TrackId` ORDER BY COUNT(*) DESC LIMIT ?"
-                    : "SELECT Tracks.*, COUNT(*) AS Listener FROM `Listens` INNER JOIN Tracks ON Listens.TrackId=Tracks.Id WHERE GuildId=? AND UserId=? "+ lastDaysQuery +"GROUP BY `TrackId` ORDER BY COUNT(*) DESC LIMIT ?");
+                    ? "SELECT Tracks.*, COUNT(*) AS Listener FROM `Listens` INNER JOIN Tracks ON Listens.TrackId=Tracks.Id WHERE Listens.GuildId=? "
+                            + lastDaysQuery + "GROUP BY `TrackId` ORDER BY COUNT(*) DESC LIMIT ?"
+                    : "SELECT Tracks.*, COUNT(*) AS Listener FROM `Listens` INNER JOIN Tracks ON Listens.TrackId=Tracks.Id WHERE GuildId=? AND UserId=? "
+                            + lastDaysQuery + "GROUP BY `TrackId` ORDER BY COUNT(*) DESC LIMIT ?");
             preparedStatement.setString(1, guildId);
             if (userId != null) {
                 preparedStatement.setString(2, userId);
@@ -124,10 +127,10 @@ public class TrackImplMySql implements TrackDao {
     }
 
     private SpotifyTrack getTrackFromResultSet(final ResultSet resultSet) throws SQLException {
-        final SpotifyTrack spotifyTrack = new SpotifyTrack(resultSet.getString("Id"),
-                resultSet.getString("Artists"), resultSet.getString("AlbumTitle"), resultSet.getString("TrackTitle"),
-                        resultSet.getString("AlbumImageUrl"), resultSet.getLong("Duration"));
+        final SpotifyTrack spotifyTrack = new SpotifyTrack(resultSet.getString("Id"), resultSet.getString("Artists"),
+                resultSet.getString("AlbumTitle"), resultSet.getString("TrackTitle"),
+                resultSet.getString("AlbumImageUrl"), resultSet.getLong("Duration"));
         return spotifyTrack;
     }
-    
+
 }

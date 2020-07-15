@@ -4,7 +4,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.SimpleDateFormat;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -96,11 +95,11 @@ public class UserImplMySql implements UserDao {
     @Override
     public Long getMostListensTime() {
         try (final Connection connection = hikariDataSource.getConnection()) {
-            final PreparedStatement preparedStatement = connection
-                    .prepareStatement("SELECT SEC_TO_TIME(AVG(TIME_TO_SEC(cast(Timestamp as Time)))) AS result FROM Listens");
+            final PreparedStatement preparedStatement = connection.prepareStatement(
+                    "SELECT SEC_TO_TIME(AVG(TIME_TO_SEC(cast(Timestamp as Time)))) AS result FROM Listens");
             final ResultSet resultSet = preparedStatement.executeQuery();
-            if (resultSet.next()) {     
-                return  resultSet.getTime("result").getTime();
+            if (resultSet.next()) {
+                return resultSet.getTime("result").getTime();
             }
         } catch (SQLException ex) {
             ex.printStackTrace();

@@ -18,15 +18,13 @@ public class StatisticsHandlerCollector extends Collector {
 
     @Override
     public List<MetricFamilySamples> collect() {
-        return Collections.singletonList(buildGauge("discord_ping", "Time in milliseconds between heartbeat and the heartbeat ack response", bot.getJDA().getGatewayPing()));
+        return Collections.singletonList(
+                buildGauge("discord_ping", "Time in milliseconds between heartbeat and the heartbeat ack response",
+                        bot.getJDA().getGatewayPing()));
     }
 
     private MetricFamilySamples buildGauge(String name, String help, double value) {
-        return new MetricFamilySamples(
-                name,
-                Type.GAUGE,
-                help,
-                Collections.singletonList(new MetricFamilySamples.Sample(name, EMPTY_LIST, EMPTY_LIST, value))
-        );
+        return new MetricFamilySamples(name, Type.GAUGE, help,
+                Collections.singletonList(new MetricFamilySamples.Sample(name, EMPTY_LIST, EMPTY_LIST, value)));
     }
 }

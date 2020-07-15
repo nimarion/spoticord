@@ -16,7 +16,6 @@ public class CommandManager extends ListenerAdapter {
 
     private static final Logger logger = LoggerFactory.getLogger(CommandManager.class);
 
-
     private final Set<Command> availableCommands;
 
     public CommandManager(final Spoticord bot) {
