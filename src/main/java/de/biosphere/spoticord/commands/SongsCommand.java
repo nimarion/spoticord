@@ -9,7 +9,7 @@ import net.dv8tion.jda.api.entities.Message;
 public class SongsCommand extends Command {
 
     public SongsCommand() {
-        super("songs", "View the top 10 tracks in this guild", "song", "top");
+        super("songs", "View the top 10 tracks in this guild");
     }
 
     @Override

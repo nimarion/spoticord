@@ -9,14 +9,12 @@ import net.dv8tion.jda.api.entities.User;
 public abstract class Command {
 
     private final String command;
-    private final String[] aliases;
     private final String description;
     private Spoticord bot;
 
-    public Command(final String command, final String description, final String... alias) {
+    public Command(final String command, final String description) {
         this.command = command;
         this.description = description;
-        this.aliases = alias;
     }
 
     public abstract void execute(final String[] args, final Message message);
@@ -35,10 +33,6 @@ public abstract class Command {
 
     public String getCommand() {
         return command;
-    }
-
-    public String[] getAliases() {
-        return aliases;
     }
 
     public String getDescription() {

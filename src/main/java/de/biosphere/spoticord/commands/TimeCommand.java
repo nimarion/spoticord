@@ -13,7 +13,7 @@ import net.dv8tion.jda.api.entities.Message;
 public class TimeCommand extends Command {
 
     public TimeCommand() {
-        super("time", "See how much time you listened to music on Spotify", "lt");
+        super("time", "See how much time you listened to music on Spotify");
     }
 
     @Override
@@ -37,8 +37,8 @@ public class TimeCommand extends Command {
             final long date = getBot().getDatabase().getUserDao().getMostListensTime();
             final Date firstDateRange = new Date(date - 1800 * 1000);
             final Date secondDateRange = new Date(date + 1800 * 1000);
-            String firstRange = new SimpleDateFormat("HH.mm").format(roundToQuarter(firstDateRange));
-            String secondRange = new SimpleDateFormat("HH.mm").format(roundToQuarter(secondDateRange));
+            final String firstRange = new SimpleDateFormat("HH.mm").format(roundToQuarter(firstDateRange));
+            final String secondRange = new SimpleDateFormat("HH.mm").format(roundToQuarter(secondDateRange));
             embedBuilder.setDescription(
                     "Der Server hört am meisten Musik zwischen " + firstRange + " und " + secondRange + " Uhr");
         } else if (!message.getMentionedMembers().isEmpty()) {
@@ -76,11 +76,11 @@ public class TimeCommand extends Command {
     }
 
     private Date roundToQuarter(final Date date) {
-        Calendar calendar = Calendar.getInstance();
+        final Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
 
-        int unroundedMinutes = calendar.get(Calendar.MINUTE);
-        int mod = unroundedMinutes % 15;
+        final int unroundedMinutes = calendar.get(Calendar.MINUTE);
+        final int mod = unroundedMinutes % 15;
         calendar.add(Calendar.MINUTE, mod < 8 ? -mod : (15 - mod));
         return calendar.getTime();
     }

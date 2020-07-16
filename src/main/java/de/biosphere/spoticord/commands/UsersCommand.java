@@ -9,7 +9,7 @@ import net.dv8tion.jda.api.entities.Message;
 public class UsersCommand extends Command {
 
     public UsersCommand() {
-        super("users", "View the top 10 users in this guild", "user");
+        super("users", "View the top 10 users in this guild");
     }
 
     @Override

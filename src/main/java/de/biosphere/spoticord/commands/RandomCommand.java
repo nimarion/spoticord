@@ -7,7 +7,7 @@ import net.dv8tion.jda.api.entities.Message;
 public class RandomCommand extends Command {
 
     public RandomCommand() {
-        super("random", "Get a random song from this guild", "rnd");
+        super("random", "Get a random song from this guild");
     }
 
     @Override

@@ -17,6 +17,7 @@ public class Configuration {
     public static final String PROMETHEUS_PORT;
     public static final String DISCORD_TOKEN;
     public static final String DISCORD_GAME;
+    public static final String DISCORD_PREFIX;
 
     static {
         final Dotenv dotenv = Dotenv.configure().ignoreIfMissing().load();
@@ -30,6 +31,7 @@ public class Configuration {
         PROMETHEUS_PORT = getenv("PROMETHEUS_PORT", dotenv);
         DISCORD_TOKEN = getenv("DISCORD_TOKEN", dotenv);
         DISCORD_GAME = getenv("DISCORD_GAME", dotenv);
+        DISCORD_PREFIX = getenv("DISCORD_PREFIX", dotenv);
 
         try {
             checkNull();

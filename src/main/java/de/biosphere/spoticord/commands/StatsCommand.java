@@ -11,7 +11,7 @@ import net.dv8tion.jda.api.entities.Message;
 public class StatsCommand extends Command {
 
         public StatsCommand() {
-                super("stats", "Show some statistics", "info");
+                super("info", "Show some statistics");
         }
 
         @Override
