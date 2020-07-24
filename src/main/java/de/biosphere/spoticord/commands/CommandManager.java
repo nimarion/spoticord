@@ -60,7 +60,7 @@ public class CommandManager extends ListenerAdapter {
             return PrefixType.MENTION;
         }
         if (Configuration.DISCORD_PREFIX != null && content.startsWith(Configuration.DISCORD_PREFIX)) {
-            return PrefixType.NONE;
+            return PrefixType.PREFIX;
         }
         return PrefixType.NONE;
     }
