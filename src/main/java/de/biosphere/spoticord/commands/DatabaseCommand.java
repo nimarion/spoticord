@@ -15,7 +15,7 @@ public class DatabaseCommand extends Command {
         final EmbedBuilder embedBuilder = getEmbed(message.getGuild(), message.getAuthor());
 
         final Integer trackAmount = getBot().getDatabase().getTrackDao().getTrackAmount();
-        final Integer listensAmountGlobal = getBot().getDatabase().getTrackDao().getListensAmount(null);
+        final Integer listensAmountGlobal = getBot().getDatabase().getTrackDao().getListensAmount();
         final Integer listensAmount = getBot().getDatabase().getTrackDao().getListensAmount(message.getGuild().getId());
 
         embedBuilder.addField("Track Datapoints", String.valueOf(trackAmount), false);

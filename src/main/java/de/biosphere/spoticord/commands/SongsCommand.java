@@ -2,8 +2,10 @@ package de.biosphere.spoticord.commands;
 
 import java.util.Map;
 
+import de.biosphere.spoticord.DiscordUtils;
 import de.biosphere.spoticord.database.model.SpotifyTrack;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 
 public class SongsCommand extends Command {
@@ -15,12 +17,13 @@ public class SongsCommand extends Command {
     @Override
     public void execute(String[] args, Message message) {
         final EmbedBuilder embedBuilder = getEmbed(message.getGuild(), message.getAuthor());
-        if (message.getMentionedMembers().isEmpty()) {
+        final Member member = DiscordUtils.getAddressedMember(message);
+        if (args.length == 0 || args[0].equalsIgnoreCase("server")) {
             addListToEmbed(embedBuilder,
                     getBot().getDatabase().getTrackDao().getTopTracks(message.getGuild().getId(), null, 10, 7));
         } else {
             addListToEmbed(embedBuilder, getBot().getDatabase().getTrackDao().getTopTracks(message.getGuild().getId(),
-                    message.getMentionedMembers().get(0).getId(), 10, 7));
+                    member.getId(), 10, 7));
         }
         message.getChannel().sendMessage(embedBuilder.build()).queue();
     }
