@@ -4,7 +4,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.SimpleDateFormat;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -18,6 +17,11 @@ public class UserImplMySql implements UserDao {
 
     public UserImplMySql(HikariDataSource hikariDataSource) {
         this.hikariDataSource = hikariDataSource;
+    }
+
+    @Override
+    public Long getListenTime(String guildId) {
+        return getListenTime(guildId, null);
     }
 
     @Override
@@ -94,13 +98,23 @@ public class UserImplMySql implements UserDao {
     }
 
     @Override
-    public Long getMostListensTime() {
+    public Long getMostListensTime(String guildId) {
+        return getMostListensTime(guildId, null);
+    }
+
+    @Override
+    public Long getMostListensTime(String guildId, String userId) {
         try (final Connection connection = hikariDataSource.getConnection()) {
-            final PreparedStatement preparedStatement = connection
-                    .prepareStatement("SELECT SEC_TO_TIME(AVG(TIME_TO_SEC(cast(Timestamp as Time)))) AS result FROM Listens");
+            final PreparedStatement preparedStatement = connection.prepareStatement(userId == null
+                    ? "SELECT SEC_TO_TIME(AVG(TIME_TO_SEC(cast(Timestamp as Time)))) AS result FROM Listens WHERE GuildId=?"
+                    : "SELECT SEC_TO_TIME(AVG(TIME_TO_SEC(cast(Timestamp as Time)))) AS result FROM Listens WHERE GuildId=? AND UserId=?");
+            preparedStatement.setString(1, guildId);
+            if (userId != null) {
+                preparedStatement.setString(2, userId);
+            }
             final ResultSet resultSet = preparedStatement.executeQuery();
-            if (resultSet.next()) {     
-                return  resultSet.getTime("result").getTime();
+            if (resultSet.next()) {
+                return resultSet.getTime("result").getTime();
             }
         } catch (SQLException ex) {
             ex.printStackTrace();

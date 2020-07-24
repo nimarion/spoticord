@@ -43,5 +43,10 @@ public class AlbumImplMySql implements AlbumDao {
         }
         return topMap;
     }
-    
+
+    @Override
+    public Map<String, Integer> getTopAlbum(String guildId, Integer count) {
+        return getTopAlbum(guildId, null, count);
+    }
+
 }

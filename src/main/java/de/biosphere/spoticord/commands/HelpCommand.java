@@ -19,32 +19,39 @@ public class HelpCommand extends Command {
         final EmbedBuilder embedBuilder = getEmbed(message.getGuild(), message.getAuthor());
         final Collection<Command> commandCollection = getBot().getCommandManager().getAvailableCommands();
 
-        if(args.length == 0){
+        if (args.length == 0) {
             embedBuilder.setTitle("Command Übersicht");
-            commandCollection.stream()
-                    .collect(Collectors.groupingBy(Command::getCommand))
-                    .entrySet().stream().sorted((entry1, entry2) -> {
-                final int sizeComparison = entry2.getValue().size() - entry1.getValue().size();
-                return sizeComparison != 0 ? sizeComparison : entry1.getKey().compareTo(entry2.getKey());
-            }).forEach(entry -> {
-                final List<Command> commandList = entry.getValue();
-                final String categoryCommands = commandList.stream()
-                        .map(Command::getDescription)
-                        .sorted(String::compareTo)
-                        .map(string -> String.format("`%s`", string))
-                        .collect(Collectors.joining("  "));
-                embedBuilder.addField(entry.getKey().toString(), categoryCommands, false);
-            });
+            appendOverview(embedBuilder, commandCollection);
         } else {
-            final Optional<Command> optCommand = commandCollection.stream().filter(command -> command.getCommand().equals(args[0])).findFirst();
-            if (optCommand.isPresent()) {
-                final Command command = optCommand.get();
-                embedBuilder.addField(command.getCommand(), command.getDescription(), false);
-            } else {
-                embedBuilder.addField("Command wurde nicht gefunden", "", false);
-            }
+            addCommandDescription(embedBuilder, args[0], commandCollection);
         }
         message.getTextChannel().sendMessage(embedBuilder.build()).queue();
+    }
+
+    public void appendOverview(final EmbedBuilder embedBuilder, final Collection<Command> commandCollection) {
+        commandCollection.stream().collect(Collectors.groupingBy(Command::getCommand)).entrySet().stream()
+                .sorted((entry1, entry2) -> {
+                    final int sizeComparison = entry2.getValue().size() - entry1.getValue().size();
+                    return sizeComparison != 0 ? sizeComparison : entry1.getKey().compareTo(entry2.getKey());
+                }).forEach(entry -> {
+                    final List<Command> commandList = entry.getValue();
+                    final String categoryCommands = commandList.stream().map(Command::getDescription)
+                            .sorted(String::compareTo).map(string -> String.format("`%s`", string))
+                            .collect(Collectors.joining("  "));
+                    embedBuilder.addField(entry.getKey().toString(), categoryCommands, false);
+                });
+    }
+
+    public void addCommandDescription(final EmbedBuilder embedBuilder, final String commandName,
+            final Collection<Command> commandCollection) {
+        final Optional<Command> optCommand = commandCollection.stream()
+                .filter(command -> command.getCommand().equals(commandName)).findFirst();
+        if (optCommand.isPresent()) {
+            final Command command = optCommand.get();
+            embedBuilder.addField(command.getCommand(), command.getDescription(), false);
+        } else {
+            embedBuilder.addField("Command wurde nicht gefunden", "", false);
+        }
     }
 
 }

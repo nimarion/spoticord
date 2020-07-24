@@ -1,5 +1,6 @@
 package de.biosphere.spoticord.commands;
 
+import de.biosphere.spoticord.Configuration;
 import de.biosphere.spoticord.Spoticord;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -10,12 +11,12 @@ import org.slf4j.LoggerFactory;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 public class CommandManager extends ListenerAdapter {
 
     private static final Logger logger = LoggerFactory.getLogger(CommandManager.class);
-
 
     private final Set<Command> availableCommands;
 
@@ -42,28 +43,53 @@ public class CommandManager extends ListenerAdapter {
         if (event.getAuthor().isBot()) {
             return;
         }
-
         final String content = event.getMessage().getContentRaw();
-
-        if (content.startsWith("+")) {
-            final String[] arguments = content.split(" ");
-            final String input = arguments[0].replaceFirst("\\+", "");
-            for (Command command : this.availableCommands) {
-                if ((command.getCommand()).equalsIgnoreCase(input)) {
-                    command.execute(Arrays.copyOfRange(arguments, 1, arguments.length), event.getMessage());
-                } else {
-                    for (String alias : command.getAliases()) {
-                        if (alias.equalsIgnoreCase(input)) {
-                            command.execute(Arrays.copyOfRange(arguments, 1, arguments.length), event.getMessage());
-                        }
-                    }
-                }
+        final PrefixType prefixType = checkPrefix(content, event.getGuild().getSelfMember().getId());
+        if (prefixType != PrefixType.NONE) {
+            final Optional<Command> optional = availableCommands.stream()
+                    .filter(command -> command.getCommand().equalsIgnoreCase(getCommand(content, prefixType)))
+                    .findFirst();
+            if (optional.isPresent()) {
+                optional.get().execute(getArguments(content, prefixType), event.getMessage());
             }
         }
     }
 
+    private PrefixType checkPrefix(final String content, final String botId) {
+        if (Configuration.DISCORD_PREFIX == null) {
+            return PrefixType.NONE;
+        }
+        if (content.startsWith(Configuration.DISCORD_PREFIX)) {
+            return PrefixType.PREFIX;
+        }
+        if (content.startsWith("<@!" + botId + ">")) {
+            return PrefixType.MENTION;
+        }
+        return PrefixType.NONE;
+    }
+
+    private String[] getArguments(final String content, final PrefixType prefixType) {
+        final String[] arguments = content.split(" ");
+        return Arrays.copyOfRange(arguments, prefixType == PrefixType.PREFIX ? 1 : 2, arguments.length);
+    }
+
+    private String getCommand(final String content, final PrefixType prefixType) {
+        final String[] arguments = content.split(" ");
+        if (prefixType == PrefixType.PREFIX) {
+            return arguments[0].replaceFirst("\\" + Configuration.DISCORD_PREFIX, "");
+        }
+        if (arguments.length >= 2) {
+            return arguments[1];
+        }
+        return null;
+    }
+
     public Set<Command> getAvailableCommands() {
         return Collections.unmodifiableSet(availableCommands);
+    }
+
+    private enum PrefixType {
+        MENTION, PREFIX, NONE
     }
 
 }

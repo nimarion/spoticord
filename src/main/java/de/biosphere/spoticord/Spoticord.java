@@ -36,7 +36,7 @@ public class Spoticord {
         database = new MySqlDatabase(Configuration.DATABASE_HOST, Configuration.DATABASE_USER,
                 Configuration.DATABASE_PASSWORD,
                 Configuration.DATABASE_NAME == null ? "Tracks" : Configuration.DATABASE_NAME,
-                Configuration.DATABASE_PORT== null ? 3306 : Integer.valueOf(Configuration.DATABASE_PORT));
+                Configuration.DATABASE_PORT == null ? 3306 : Integer.valueOf(Configuration.DATABASE_PORT));
         logger.info("Database-Connection set up!");
 
         jda = initializeJDA();
@@ -73,7 +73,7 @@ public class Spoticord {
             final JDABuilder jdaBuilder = JDABuilder.create(GatewayIntent.GUILD_PRESENCES, GatewayIntent.GUILD_MEMBERS,
                     GatewayIntent.GUILD_MESSAGES);
             jdaBuilder.setToken(Configuration.DISCORD_TOKEN);
-            if(Configuration.DISCORD_GAME != null){
+            if (Configuration.DISCORD_GAME != null) {
                 jdaBuilder.setActivity(Activity.playing(Configuration.DISCORD_GAME));
             } else {
                 jdaBuilder.setActivity(Activity.playing("🎶"));
