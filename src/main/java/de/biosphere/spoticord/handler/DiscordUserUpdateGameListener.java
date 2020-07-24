@@ -25,26 +25,34 @@ public class DiscordUserUpdateGameListener extends ListenerAdapter {
     }
 
     @Override
-    public void onUserActivityStart(@Nonnull UserActivityStartEvent event) {
-        if (event.getNewActivity() == null || !event.getNewActivity().isRich()
-                || event.getNewActivity().getType() != Activity.ActivityType.LISTENING)
+    public void onUserActivityStart(@Nonnull final UserActivityStartEvent event) {
+        if (checkActivity(event.getNewActivity())) {
             return;
-
+        }
         final RichPresence richPresence = event.getNewActivity().asRichPresence();
-        if (richPresence == null || richPresence.getDetails() == null || richPresence.getSyncId() == null)
+        if (checkRichPresence(richPresence)) {
             return;
-
-        if (lastActivitiesMap.containsKey(event.getMember().getId())
-                && lastActivitiesMap.get(event.getMember().getId()).equalsIgnoreCase(richPresence.getSyncId())) {
+        }
+        if (checkCache(event.getMember().getId(), richPresence.getSyncId())) {
             return;
         }
         lastActivitiesMap.put(event.getMember().getId(), richPresence.getSyncId());
-
-        SpotifyTrack spotifyTrack = new SpotifyTrack(richPresence.getSyncId(), richPresence.getState(),
+        final SpotifyTrack spotifyTrack = new SpotifyTrack(richPresence.getSyncId(), richPresence.getState(),
                 richPresence.getLargeImage().getText(), richPresence.getDetails(),
                 richPresence.getLargeImage().getUrl(),
                 richPresence.getTimestamps().getEnd() - richPresence.getTimestamps().getStart());
-
         bot.getDatabase().getTrackDao().insertTrack(spotifyTrack, event.getMember().getId(), event.getGuild().getId());
+    }
+
+    private boolean checkActivity(final Activity activity) {
+        return activity == null || !activity.isRich() || activity.getType() != Activity.ActivityType.LISTENING;
+    }
+
+    private boolean checkRichPresence(final RichPresence richPresence) {
+        return richPresence == null || richPresence.getDetails() == null || richPresence.getSyncId() == null;
+    }
+
+    private boolean checkCache(final String memberId, final String spotifyId) {
+        return lastActivitiesMap.containsKey(memberId) && lastActivitiesMap.get(memberId).equalsIgnoreCase(spotifyId);
     }
 }

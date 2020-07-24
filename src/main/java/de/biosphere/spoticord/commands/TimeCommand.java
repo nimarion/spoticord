@@ -1,12 +1,11 @@
 package de.biosphere.spoticord.commands;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import de.biosphere.spoticord.DiscordUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 
@@ -24,33 +23,26 @@ public class TimeCommand extends Command {
             final String timeFormat = formatDuration(time);
             embedBuilder.setDescription("Der ganze Server hat bereits " + timeFormat + " Musik gehört");
         } else if (args[0].equalsIgnoreCase("server")) {
-            final Map<String, Long> topMap = getBot().getDatabase().getUserDao()
-                    .getTopListenersByTime(message.getGuild().getId(), 10);
-            topMap.forEach((k, v) -> {
-                final Member member = message.getGuild().getMemberById(k);
-                if (member != null) {
-                    embedBuilder.appendDescription(String.format("%s#%s %s \n", member.getEffectiveName(),
-                            member.getUser().getDiscriminator(), formatDuration(v)));
-                }
-            });
-        } else if (args[0].equalsIgnoreCase("clock")) {
-            final long date = getBot().getDatabase().getUserDao().getMostListensTime();
-            final Date firstDateRange = new Date(date - 1800 * 1000);
-            final Date secondDateRange = new Date(date + 1800 * 1000);
-            final String firstRange = new SimpleDateFormat("HH.mm").format(roundToQuarter(firstDateRange));
-            final String secondRange = new SimpleDateFormat("HH.mm").format(roundToQuarter(secondDateRange));
-            embedBuilder.setDescription(
-                    "Der Server hört am meisten Musik zwischen " + firstRange + " und " + secondRange + " Uhr");
+            addListToEmbed(embedBuilder, message.getGuild(),
+                    getBot().getDatabase().getUserDao().getTopListenersByTime(message.getGuild().getId(), 10));
         } else if (!message.getMentionedMembers().isEmpty()) {
-            final Member targetMember = message.getMentionedMembers().get(0);
+            final Member targetMember = DiscordUtils.getAddressedMember(message);
             final Long time = getBot().getDatabase().getUserDao().getListenTime(message.getGuild().getId(),
                     targetMember.getId());
-            final String timeFormat = formatDuration(time);
-            embedBuilder.setDescription(targetMember.getAsMention() + " hat bereits " + timeFormat + " Musik gehört");
+            embedBuilder.setDescription(
+                    targetMember.getAsMention() + " hat bereits " + formatDuration(time) + " Musik gehört");
         } else {
             embedBuilder.setDescription("+time [server,mention]");
         }
         message.getTextChannel().sendMessage(embedBuilder.build()).queue();
+    }
+
+    private void addListToEmbed(final EmbedBuilder embedBuilder, final Guild guild, final Map<String, Long> topMap) {
+        topMap.keySet().stream().filter(userId -> guild.getMemberById(userId) != null)
+                .map(userId -> guild.getMemberById(userId)).forEach(member -> {
+                    embedBuilder.appendDescription(String.format("%s#%s %s \n", member.getEffectiveName(),
+                            member.getUser().getDiscriminator(), formatDuration(topMap.get(member.getId()))));
+                });
     }
 
     private String formatDuration(long millis) {
@@ -73,16 +65,6 @@ public class TimeCommand extends Command {
         sb.append(" Sekunden");
 
         return (sb.toString());
-    }
-
-    private Date roundToQuarter(final Date date) {
-        final Calendar calendar = Calendar.getInstance();
-        calendar.setTime(date);
-
-        final int unroundedMinutes = calendar.get(Calendar.MINUTE);
-        final int mod = unroundedMinutes % 15;
-        calendar.add(Calendar.MINUTE, mod < 8 ? -mod : (15 - mod));
-        return calendar.getTime();
     }
 
 }
