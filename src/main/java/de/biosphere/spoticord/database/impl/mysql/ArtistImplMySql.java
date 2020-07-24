@@ -44,4 +44,9 @@ public class ArtistImplMySql implements ArtistDao {
         return topMap;
     }
 
+    @Override
+    public Map<String, Integer> getTopArtists(String guildId, Integer count) {
+        return getTopArtists(guildId, null, count);
+    }
+
 }

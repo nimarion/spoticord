@@ -13,6 +13,8 @@ public interface UserDao {
      */
     Long getListenTime(final String guildId, final String userId);
 
+    Long getListenTime(final String guildId);
+
     /**
      * Returns a map of the users with the most database entrys on a guild. The
      * <code>code</code> argument specifies the length of the map. Map contains
@@ -50,6 +52,8 @@ public interface UserDao {
      * 
      * @return the time in milliseconds as {@link Long}
      */
-    Long getMostListensTime();
+    Long getMostListensTime(final String guildId);
+
+    Long getMostListensTime(final String guildId, final String userId);
 
 }

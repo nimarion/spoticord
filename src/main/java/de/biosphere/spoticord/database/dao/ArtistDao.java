@@ -17,4 +17,6 @@ public interface ArtistDao {
      */
     Map<String, Integer> getTopArtists(final String guildId, final String userId, final Integer count);
 
+    Map<String, Integer> getTopArtists(final String guildId, final Integer count);
+
 }

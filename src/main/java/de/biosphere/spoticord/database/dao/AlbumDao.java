@@ -17,4 +17,6 @@ public interface AlbumDao {
      */
     Map<String, Integer> getTopAlbum(final String guildId, final String userId, final Integer count);
 
+    Map<String, Integer> getTopAlbum(final String guildId, final Integer count);
+
 }

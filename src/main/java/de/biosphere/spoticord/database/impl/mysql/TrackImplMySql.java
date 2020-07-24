@@ -5,6 +5,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import com.zaxxer.hikari.HikariDataSource;
@@ -37,12 +39,33 @@ public class TrackImplMySql implements TrackDao {
 
     @Override
     public Integer getListensAmount(String guildId) {
+        return getListensAmount(guildId, null);
+    }
+
+    @Override
+    public Integer getListensAmount() {
         try (final Connection connection = hikariDataSource.getConnection()) {
             final PreparedStatement preparedStatement = connection
-                    .prepareStatement(guildId == null ? "SELECT COUNT(*) AS Count FROM `Listens`"
-                            : "SELECT COUNT(*) AS Count FROM `Listens` WHERE GuildId=?");
-            if (guildId != null) {
-                preparedStatement.setString(1, guildId);
+                    .prepareStatement("SELECT COUNT(*) AS Count FROM `Listens`");
+            final ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                return resultSet.getInt("Count");
+            }
+        } catch (final SQLException ex) {
+            ex.printStackTrace();
+        }
+        return 0;
+    }
+
+    @Override
+    public Integer getListensAmount(String guildId, String userId) {
+        try (final Connection connection = hikariDataSource.getConnection()) {
+            final PreparedStatement preparedStatement = connection
+                    .prepareStatement(userId == null ? "SELECT COUNT(*) AS Count FROM `Listens` WHERE GuildId=?"
+                            : "SELECT COUNT(*) AS Count FROM `Listens` WHERE GuildId=? AND UserId=?");
+            preparedStatement.setString(1, guildId);
+            if (userId != null) {
+                preparedStatement.setString(2, userId);
             }
             final ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
@@ -76,23 +99,6 @@ public class TrackImplMySql implements TrackDao {
         } catch (final SQLException ex) {
             ex.printStackTrace();
         }
-    }
-
-    @Override
-    public SpotifyTrack getRandomTrack(String guildId) {
-        try (final Connection connection = hikariDataSource.getConnection()) {
-            final PreparedStatement preparedStatement = connection.prepareStatement(
-                    "SELECT Tracks.* FROM Listens INNER JOIN Tracks ON Listens.TrackId=Tracks.Id WHERE GuildId=? ORDER BY RAND() LIMIT 1");
-            preparedStatement.setString(1, guildId);
-            final ResultSet resultSet = preparedStatement.executeQuery();
-            if (resultSet.next()) {
-                final SpotifyTrack spotifyTrack = getTrackFromResultSet(resultSet);
-                return spotifyTrack;
-            }
-        } catch (final SQLException ex) {
-            ex.printStackTrace();
-        }
-        return null;
     }
 
     @Override
@@ -131,6 +137,33 @@ public class TrackImplMySql implements TrackDao {
                 resultSet.getString("AlbumTitle"), resultSet.getString("TrackTitle"),
                 resultSet.getString("AlbumImageUrl"), resultSet.getLong("Duration"));
         return spotifyTrack;
+    }
+
+    @Override
+    public List<SpotifyTrack> getLastTracks(String guildId) {
+        return getLastTracks(guildId, null);
+    }
+
+    @Override
+    public List<SpotifyTrack> getLastTracks(String guildId, String userId) {
+        final List<SpotifyTrack> tracks = new LinkedList<>();
+        try (final Connection connection = hikariDataSource.getConnection()) {
+            final PreparedStatement preparedStatement = connection.prepareStatement(userId == null
+                    ? "SELECT Tracks.* FROM `Listens` INNER JOIN Tracks ON Listens.TrackId=Tracks.Id WHERE GuildId=? ORDER BY `Listens`.`Timestamp`  DESC LIMIT 10"
+                    : "SELECT Tracks.* FROM `Listens` INNER JOIN Tracks ON Listens.TrackId=Tracks.Id WHERE GuildId=? AND UserId=? ORDER BY `Listens`.`Timestamp`  DESC LIMIT 10");
+            preparedStatement.setString(1, guildId);
+            if (userId != null) {
+                preparedStatement.setString(2, userId);
+            }
+            final ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                final SpotifyTrack spotifyTrack = getTrackFromResultSet(resultSet);
+                tracks.add(spotifyTrack);
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return tracks;
     }
 
 }

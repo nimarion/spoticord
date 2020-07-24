@@ -3,6 +3,7 @@ package de.biosphere.spoticord.commands;
 import de.biosphere.spoticord.Spoticord;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 
@@ -22,6 +23,13 @@ public abstract class Command {
     protected EmbedBuilder getEmbed(final Guild guild, final User requester) {
         return new EmbedBuilder().setFooter("@" + requester.getName() + "#" + requester.getDiscriminator(),
                 requester.getEffectiveAvatarUrl()).setColor(guild.getSelfMember().getColor());
+    }
+
+    protected EmbedBuilder getEmbed(final Member member) {
+        return new EmbedBuilder()
+                .setFooter("@" + member.getUser().getName() + "#" + member.getUser().getDiscriminator(),
+                        member.getUser().getEffectiveAvatarUrl())
+                .setColor(member.getGuild().getSelfMember().getColor());
     }
 
     public void setInstance(final Spoticord instance) {

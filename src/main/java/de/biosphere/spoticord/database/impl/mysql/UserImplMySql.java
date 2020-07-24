@@ -20,6 +20,11 @@ public class UserImplMySql implements UserDao {
     }
 
     @Override
+    public Long getListenTime(String guildId) {
+        return getListenTime(guildId, null);
+    }
+
+    @Override
     public Long getListenTime(String guildId, String userId) {
         try (final Connection connection = hikariDataSource.getConnection()) {
             final PreparedStatement preparedStatement = connection.prepareStatement(userId == null
@@ -93,10 +98,20 @@ public class UserImplMySql implements UserDao {
     }
 
     @Override
-    public Long getMostListensTime() {
+    public Long getMostListensTime(String guildId) {
+        return getMostListensTime(guildId, null);
+    }
+
+    @Override
+    public Long getMostListensTime(String guildId, String userId) {
         try (final Connection connection = hikariDataSource.getConnection()) {
-            final PreparedStatement preparedStatement = connection.prepareStatement(
-                    "SELECT SEC_TO_TIME(AVG(TIME_TO_SEC(cast(Timestamp as Time)))) AS result FROM Listens");
+            final PreparedStatement preparedStatement = connection.prepareStatement(userId == null
+                    ? "SELECT SEC_TO_TIME(AVG(TIME_TO_SEC(cast(Timestamp as Time)))) AS result FROM Listens WHERE GuildId=?"
+                    : "SELECT SEC_TO_TIME(AVG(TIME_TO_SEC(cast(Timestamp as Time)))) AS result FROM Listens WHERE GuildId=? AND UserId=?");
+            preparedStatement.setString(1, guildId);
+            if (userId != null) {
+                preparedStatement.setString(2, userId);
+            }
             final ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
                 return resultSet.getTime("result").getTime();
