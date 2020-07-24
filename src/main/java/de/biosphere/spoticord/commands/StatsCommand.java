@@ -6,6 +6,7 @@ import java.util.concurrent.TimeUnit;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDAInfo;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
 
 public class StatsCommand extends Command {
@@ -33,7 +34,8 @@ public class StatsCommand extends Command {
                                 true);
                 embedBuilder.addField("Commands",
                                 String.valueOf(getBot().getCommandManager().getAvailableCommands().size()), true);
-                embedBuilder.addField("Members", String.valueOf(jda.getUserCache().size()), true);
+                embedBuilder.addField("Members",
+                                String.valueOf(jda.getGuilds().stream().mapToInt(Guild::getMemberCount).sum()), true);
                 embedBuilder.addField("Java Version", System.getProperty("java.runtime.version").replace("+", "_"),
                                 true);
                 embedBuilder.addField("OS", ManagementFactory.getOperatingSystemMXBean().getName(), true);
