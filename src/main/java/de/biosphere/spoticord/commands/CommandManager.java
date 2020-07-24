@@ -56,14 +56,11 @@ public class CommandManager extends ListenerAdapter {
     }
 
     private PrefixType checkPrefix(final String content, final String botId) {
-        if (Configuration.DISCORD_PREFIX == null) {
-            return PrefixType.NONE;
-        }
-        if (content.startsWith(Configuration.DISCORD_PREFIX)) {
-            return PrefixType.PREFIX;
-        }
         if (content.startsWith("<@!" + botId + ">")) {
             return PrefixType.MENTION;
+        }
+        if (Configuration.DISCORD_PREFIX != null && content.startsWith(Configuration.DISCORD_PREFIX)) {
+            return PrefixType.NONE;
         }
         return PrefixType.NONE;
     }
