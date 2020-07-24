@@ -2,6 +2,7 @@ package de.biosphere.spoticord.commands;
 
 import de.biosphere.spoticord.Configuration;
 import de.biosphere.spoticord.Spoticord;
+import net.dv8tion.jda.api.entities.Message.MentionType;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.reflections.Reflections;
@@ -13,10 +14,12 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 public class CommandManager extends ListenerAdapter {
 
     private static final Logger logger = LoggerFactory.getLogger(CommandManager.class);
+    private static final Pattern MENTION_PATTERN = MentionType.USER.getPattern();
 
     private final Set<Command> availableCommands;
 
@@ -56,7 +59,7 @@ public class CommandManager extends ListenerAdapter {
     }
 
     private PrefixType checkPrefix(final String content, final String botId) {
-        if (content.startsWith("<@!" + botId + ">")) {
+        if (content.split(" ").length > 1 && MENTION_PATTERN.matcher(content.split(" ")[0]).matches()) {
             return PrefixType.MENTION;
         }
         if (Configuration.DISCORD_PREFIX != null && content.startsWith(Configuration.DISCORD_PREFIX)) {
