@@ -14,6 +14,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class CommandManager extends ListenerAdapter {
@@ -59,8 +60,11 @@ public class CommandManager extends ListenerAdapter {
     }
 
     private PrefixType checkPrefix(final String content, final String botId) {
-        if (content.split(" ").length > 1 && MENTION_PATTERN.matcher(content.split(" ")[0]).matches()) {
-            return PrefixType.MENTION;
+        if (content.split(" ").length > 1) {
+            final Matcher matcher = MENTION_PATTERN.matcher(content.split(" ")[0]);
+            if (matcher.matches() && matcher.group(1).equals(botId)) {
+                return PrefixType.MENTION;
+            }
         }
         if (Configuration.DISCORD_PREFIX != null && content.startsWith(Configuration.DISCORD_PREFIX)) {
             return PrefixType.PREFIX;
