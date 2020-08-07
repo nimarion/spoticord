@@ -73,6 +73,12 @@
             <artifactId>java-dotenv</artifactId>
             <version>5.3.1</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/org.liquibase/liquibase-core -->
+        <dependency>
+            <groupId>org.liquibase</groupId>
+            <artifactId>liquibase-core</artifactId>
+            <version>4.0.0</version>
+        </dependency>
     </dependencies>
 
     <build>
