@@ -19,6 +19,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -69,18 +70,17 @@ public class MySqlDatabase implements Database {
 
             this.liquibaseUpdate(implementation);
         } catch (final SQLException | DatabaseException ex) {
-            throw new RuntimeException(ex);
+            ex.printStackTrace();
         }
     }
 
     private void liquibaseUpdate(final liquibase.database.Database implementation) {
-        if (implementation == null)
-            throw new NullPointerException("Implementation is null!");
+        Objects.requireNonNull(implementation, "Implementation is null!");
 
         try (final Liquibase liquibase = new Liquibase(SCHEMA_FILE, new ClassLoaderResourceAccessor(), implementation)) {
             liquibase.update("");
         } catch (Exception ex) {
-            throw new RuntimeException(ex);
+            ex.printStackTrace();
         }
     }
 
