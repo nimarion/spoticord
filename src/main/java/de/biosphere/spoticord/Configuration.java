@@ -1,10 +1,9 @@
 package de.biosphere.spoticord;
 
-import java.lang.reflect.Field;
-
+import io.github.cdimascio.dotenv.Dotenv;
 import org.slf4j.LoggerFactory;
 
-import io.github.cdimascio.dotenv.Dotenv;
+import java.lang.reflect.Field;
 
 public class Configuration {
 
@@ -18,6 +17,8 @@ public class Configuration {
     public static final String DISCORD_TOKEN;
     public static final String DISCORD_GAME;
     public static final String DISCORD_PREFIX;
+    public static final String MAX_FETCH_DAYS;
+    public static final String DEFAULT_DAYS;
 
     static {
         final Dotenv dotenv = Dotenv.configure().ignoreIfMissing().load();
@@ -32,6 +33,8 @@ public class Configuration {
         DISCORD_TOKEN = getenv("DISCORD_TOKEN", dotenv);
         DISCORD_GAME = getenv("DISCORD_GAME", dotenv);
         DISCORD_PREFIX = getenv("DISCORD_PREFIX", dotenv);
+        MAX_FETCH_DAYS = getenv("MAX_FETCH_DAYS", dotenv);
+        DEFAULT_DAYS = getenv("DEFAULT_DAYS", dotenv);
 
         try {
             checkNull();
