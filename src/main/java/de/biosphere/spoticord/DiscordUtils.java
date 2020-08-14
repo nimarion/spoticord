@@ -34,4 +34,12 @@ public class DiscordUtils {
         return mentionedMembers.get(index);
     }
 
+    public static int getIntFromString(final String input, int defaultValue) {
+        try {
+            return input != null ? Integer.parseInt(input) : defaultValue;
+        } catch (NumberFormatException e) {
+            return defaultValue;
+        }
+    }
+
 }
