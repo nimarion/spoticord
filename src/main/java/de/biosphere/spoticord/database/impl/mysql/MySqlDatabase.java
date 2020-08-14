@@ -1,22 +1,31 @@
 package de.biosphere.spoticord.database.impl.mysql;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import com.zaxxer.hikari.metrics.prometheus.PrometheusMetricsTrackerFactory;
-
 import de.biosphere.spoticord.Configuration;
 import de.biosphere.spoticord.database.Database;
 import de.biosphere.spoticord.database.dao.AlbumDao;
 import de.biosphere.spoticord.database.dao.ArtistDao;
 import de.biosphere.spoticord.database.dao.TrackDao;
 import de.biosphere.spoticord.database.dao.UserDao;
+import liquibase.Liquibase;
+import liquibase.database.DatabaseFactory;
+import liquibase.database.jvm.JdbcConnection;
+import liquibase.exception.DatabaseException;
+import liquibase.resource.ClassLoaderResourceAccessor;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Objects;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class MySqlDatabase implements Database {
+
+    private final static String SCHEMA_FILE = "schema/db.changelog-main.xml";
 
     private final HikariDataSource dataSource;
 
@@ -43,7 +52,8 @@ public class MySqlDatabase implements Database {
 
         dataSource = new HikariDataSource(config);
 
-        initDatabase();
+        setupLiquibaseLogger();
+        updateDatabase();
 
         // InitDAOs
         albumDao = new AlbumImplMySql(dataSource);
@@ -52,18 +62,24 @@ public class MySqlDatabase implements Database {
         userDao = new UserImplMySql(dataSource);
     }
 
-    private void initDatabase() {
-        executeUpdate(
-                "CREATE TABLE IF NOT EXISTS `Listens` ( `Id` INT NOT NULL AUTO_INCREMENT , `Timestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , `TrackId` VARCHAR(22) NOT NULL , `GuildId` VARCHAR(100) NOT NULL , `UserId` VARCHAR(100) NOT NULL , INDEX `Id` (`Id`), INDEX `listens_idx_guildid_userid` (`GuildId`, `UserId`))");
-        executeUpdate(
-                "CREATE TABLE IF NOT EXISTS `Tracks` ( `Id` VARCHAR(22) NOT NULL , `Artists` VARCHAR(200) NOT NULL , `AlbumImageUrl` VARCHAR(2083) NOT NULL , `AlbumTitle` VARCHAR(200) NOT NULL , `TrackTitle` VARCHAR(200) NOT NULL , `Duration` BIGINT UNSIGNED NOT NULL , PRIMARY KEY (`Id`))");
+    private void updateDatabase() {
+        final liquibase.database.Database implementation;
+        try (final Connection connection = dataSource.getConnection()) {
+            implementation = DatabaseFactory.getInstance()
+                    .findCorrectDatabaseImplementation(new JdbcConnection(connection));
+
+            this.liquibaseUpdate(implementation);
+        } catch (final SQLException | DatabaseException ex) {
+            ex.printStackTrace();
+        }
     }
 
-    private void executeUpdate(final String query) {
-        try (final Connection connection = dataSource.getConnection()) {
-            final PreparedStatement preparedStatement = connection.prepareStatement(query);
-            preparedStatement.executeUpdate();
-        } catch (final SQLException ex) {
+    private void liquibaseUpdate(final liquibase.database.Database implementation) {
+        Objects.requireNonNull(implementation, "Implementation is null!");
+
+        try (final Liquibase liquibase = new Liquibase(SCHEMA_FILE, new ClassLoaderResourceAccessor(), implementation)) {
+            liquibase.update("");
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
     }
@@ -105,8 +121,13 @@ public class MySqlDatabase implements Database {
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() {
         dataSource.close();
+    }
+
+    private void setupLiquibaseLogger() {
+        final Logger liquibase = Logger.getLogger("liquibase");
+        liquibase.setLevel(Level.SEVERE);
     }
 
 }
