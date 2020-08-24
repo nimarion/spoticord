@@ -2,7 +2,7 @@ package de.biosphere.spoticord.enums;
 
 import java.util.List;
 
-public enum TrackFilter {
+public enum TimeFilter {
 
     TODAY(1, List.of("day", "today", "1", "heute", "tag")),
     SEVEN_DAYS(7, List.of("week", "7", "seven", "sieben", "woche")),
@@ -12,7 +12,7 @@ public enum TrackFilter {
     private final int lastDayValue;
     private final List<String> alias;
 
-    TrackFilter(final int lastDayValue, final List<String> alias) {
+    TimeFilter(final int lastDayValue, final List<String> alias) {
         this.lastDayValue = lastDayValue;
         this.alias = alias;
     }
@@ -25,12 +25,12 @@ public enum TrackFilter {
         return alias;
     }
 
-    public static TrackFilter getFilter(final String value) {
-        for (final TrackFilter trackFilter : values()) {
-            if (trackFilter.name().equalsIgnoreCase(value)) return trackFilter;
-            if(trackFilter.getAlias() == null) continue;
-            for (final String alias : trackFilter.getAlias()) {
-                if (alias.equalsIgnoreCase(value)) return trackFilter;
+    public static TimeFilter getFilter(final String value) {
+        for (final TimeFilter timeFilter : values()) {
+            if (timeFilter.name().equalsIgnoreCase(value)) return timeFilter;
+            if(timeFilter.getAlias() == null) continue;
+            for (final String alias : timeFilter.getAlias()) {
+                if (alias.equalsIgnoreCase(value)) return timeFilter;
             }
         }
         return CUSTOM;

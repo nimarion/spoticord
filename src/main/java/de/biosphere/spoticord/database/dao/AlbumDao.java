@@ -13,10 +13,12 @@ public interface AlbumDao {
      * @param guildId the Snowflake id of the guild that the user is part of
      * @param userId  the Snowflake id of the user
      * @param count   the length of the map
+     * @param lastDays the last days for data collection when 0 all data
      * @return A sorted map with <code>code</code> entrys
      */
-    Map<String, Integer> getTopAlbum(final String guildId, final String userId, final Integer count);
+    Map<String, Integer> getTopAlbum(final String guildId, final String userId, final Integer count,
+            final Integer lastDays);
 
-    Map<String, Integer> getTopAlbum(final String guildId, final Integer count);
+    Map<String, Integer> getTopAlbum(final String guildId, final Integer count, final Integer lastDays);
 
 }
