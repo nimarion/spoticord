@@ -1,7 +1,6 @@
 package de.biosphere.spoticord.utils;
 
 import de.biosphere.spoticord.Configuration;
-import de.biosphere.spoticord.DiscordUtils;
 import de.biosphere.spoticord.enums.TimeFilter;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
