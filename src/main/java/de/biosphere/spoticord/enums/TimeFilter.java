@@ -9,16 +9,16 @@ public enum TimeFilter {
     THIRTY_DAYS(30, List.of("month", "30", "thirty", "dreißig", "monat")),
     CUSTOM(-1, null);
 
-    private final int lastDayValue;
+    private final int dayValue;
     private final List<String> alias;
 
-    TimeFilter(final int lastDayValue, final List<String> alias) {
-        this.lastDayValue = lastDayValue;
+    TimeFilter(final int dayValue, final List<String> alias) {
+        this.dayValue = dayValue;
         this.alias = alias;
     }
 
-    public int getLastDayValue() {
-        return lastDayValue;
+    public int getDayValue() {
+        return dayValue;
     }
 
     public List<String> getAlias() {

@@ -1,6 +1,6 @@
 package de.biosphere.spoticord.commands;
 
-import de.biosphere.spoticord.utils.LastDayParser;
+import de.biosphere.spoticord.utils.DayParser;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 
@@ -14,14 +14,14 @@ public class AlbumCommand extends Command {
 
     @Override
     public void execute(String[] args, Message message) {
-        final LastDayParser.Parsed parsed = LastDayParser.get(args, message);
+        final DayParser.Parsed parsed = DayParser.get(args, message);
 
-        final EmbedBuilder embedBuilder = LastDayParser.getEmbed(
-                message.getGuild(), message.getAuthor(), parsed.getLastDays(), parsed.isServerStats());
+        final EmbedBuilder embedBuilder = DayParser.getEmbed(
+                message.getGuild(), message.getAuthor(), parsed.getDays(), parsed.isServerStats());
 
         final Map<String, Integer> topAlbum = getBot().getDatabase().getAlbumDao().getTopAlbum(
                 message.getGuild().getId(),
-                parsed.isServerStats() ? null : parsed.getMember().getId(), 10, parsed.getLastDays());
+                parsed.isServerStats() ? null : parsed.getMember().getId(), 10, parsed.getDays());
 
         addListToEmbed(embedBuilder, topAlbum);
         message.getChannel().sendMessage(embedBuilder.build()).queue();

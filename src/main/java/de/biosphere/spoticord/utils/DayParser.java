@@ -10,7 +10,7 @@ import net.dv8tion.jda.api.entities.User;
 
 import java.util.regex.Pattern;
 
-public class LastDayParser {
+public class DayParser {
 
     private static final Integer MAX_FETCH_DAYS;
     private static final Integer DEFAULT_DAYS;
@@ -28,9 +28,9 @@ public class LastDayParser {
         MENTION_PATTERN = Message.MentionType.USER.getPattern();
     }
 
-    public static int getLastDays(final String input) {
+    public static int getDays(final String input) {
         final TimeFilter filter = TimeFilter.getFilter(input);
-        if (filter != TimeFilter.CUSTOM) return Math.min(filter.getLastDayValue(), MAX_FETCH_DAYS);
+        if (filter != TimeFilter.CUSTOM) return Math.min(filter.getDayValue(), MAX_FETCH_DAYS);
         if (!input.matches(REGEX)) return MIN_DAYS;
         final int days = Integer.parseInt(input);
         if (days <= 0) return MIN_DAYS;
@@ -48,29 +48,29 @@ public class LastDayParser {
 
     public static Parsed get(final String[] args, final Message message) {
         final Member member = DiscordUtils.getAddressedMember(message);
-        final int lastDays;
+        final int days;
         final boolean serverStats;
 
         if (args.length >= 1) {
             String day = args[args.length == 1 ? 0 : 1];
-            lastDays = getLastDays(day);
+            days = getDays(day);
             serverStats = !MENTION_PATTERN.matcher(args[0]).matches();
         } else {
             serverStats = true;
-            lastDays = MIN_DAYS;
+            days = MIN_DAYS;
         }
-        return new Parsed(member, lastDays, serverStats);
+        return new Parsed(member, days, serverStats);
     }
 
     public static class Parsed {
 
         private final Member member;
-        private final int lastDays;
+        private final int days;
         private final boolean serverStats;
 
-        public Parsed(final Member member, final int lastDays, final boolean serverStats) {
+        public Parsed(final Member member, final int days, final boolean serverStats) {
             this.member = member;
-            this.lastDays = lastDays;
+            this.days = days;
             this.serverStats = serverStats;
         }
 
@@ -78,8 +78,8 @@ public class LastDayParser {
             return member;
         }
 
-        public int getLastDays() {
-            return lastDays;
+        public int getDays() {
+            return days;
         }
 
         public boolean isServerStats() {

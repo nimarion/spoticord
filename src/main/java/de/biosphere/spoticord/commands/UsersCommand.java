@@ -1,6 +1,6 @@
 package de.biosphere.spoticord.commands;
 
-import de.biosphere.spoticord.utils.LastDayParser;
+import de.biosphere.spoticord.utils.DayParser;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
@@ -19,7 +19,7 @@ public class UsersCommand extends Command {
 
     @Override
     public void execute(String[] args, Message message) {
-        final int lastDays = args.length == 0 ? 0 : LastDayParser.getLastDays(args[0]);
+        final int lastDays = args.length == 0 ? 0 : DayParser.getDays(args[0]);
 
         final EmbedBuilder embedBuilder = getEmbed(message.getGuild(), message.getAuthor(), lastDays);
         final Map<String, Integer> topMap = getBot().getDatabase().getUserDao().getTopUsers(message.getGuild().getId(),
