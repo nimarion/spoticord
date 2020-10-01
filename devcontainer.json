@@ -1,0 +1,10 @@
+{
+    "name": "spoticord",
+    "args": {
+        "VARIANT": "14",
+        "INSTALL_GRADLE": "false"
+    },
+    "extensions": [
+        "vscjava.vscode-java-pack"
+    ]
+}
