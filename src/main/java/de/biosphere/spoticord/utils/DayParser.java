@@ -30,19 +30,23 @@ public class DayParser {
 
     public static int getDays(final String input) {
         final TimeFilter filter = TimeFilter.getFilter(input);
-        if (filter != TimeFilter.CUSTOM) return Math.min(filter.getDayValue(), MAX_FETCH_DAYS);
-        if (!input.matches(REGEX)) return MIN_DAYS;
+        if (filter != TimeFilter.CUSTOM)
+            return Math.min(filter.getDayValue(), MAX_FETCH_DAYS);
+        if (!input.matches(REGEX))
+            return MIN_DAYS;
         final int days = Integer.parseInt(input);
-        if (days <= 0) return MIN_DAYS;
+        if (days <= 0)
+            return MIN_DAYS;
         return Math.min(days, MAX_FETCH_DAYS);
     }
 
-    public static EmbedBuilder getEmbed(final Guild guild, final User requester,
-            final int days, final boolean serverStats) {
-        return new EmbedBuilder().setFooter(FOOTER_FORMAT.formatted(
-                requester.getName(), requester.getDiscriminator(),
-                days, days == 1 ? "" : "s", serverStats ? "Server" : "User"),
-                requester.getEffectiveAvatarUrl())
+    public static EmbedBuilder getEmbed(final Guild guild, final User requester, final int days,
+            final boolean serverStats) {
+        return new EmbedBuilder()
+                .setFooter(
+                        FOOTER_FORMAT.formatted(requester.getName(), requester.getDiscriminator(), days,
+                                days == 1 ? "" : "s", serverStats ? "Server" : "User"),
+                        requester.getEffectiveAvatarUrl())
                 .setColor(guild.getSelfMember().getColor());
     }
 

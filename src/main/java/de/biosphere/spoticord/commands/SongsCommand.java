@@ -17,12 +17,12 @@ public class SongsCommand extends Command {
     public void execute(String[] args, Message message) {
         final DayParser.Parsed parsed = DayParser.get(args, message);
 
-        final EmbedBuilder embedBuilder = DayParser.getEmbed(
-                message.getGuild(), message.getAuthor(), parsed.getDays(), parsed.isServerStats());
+        final EmbedBuilder embedBuilder = DayParser.getEmbed(message.getGuild(), message.getAuthor(), parsed.getDays(),
+                parsed.isServerStats());
 
         final Map<SpotifyTrack, Integer> topTracks = getBot().getDatabase().getTrackDao().getTopTracks(
-                message.getGuild().getId(),
-                parsed.isServerStats() ? null : parsed.getMember().getId(), 10, parsed.getDays());
+                message.getGuild().getId(), parsed.isServerStats() ? null : parsed.getMember().getId(), 10,
+                parsed.getDays());
 
         addListToEmbed(embedBuilder, topTracks);
         message.getChannel().sendMessage(embedBuilder.build()).queue();

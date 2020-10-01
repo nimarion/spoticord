@@ -22,16 +22,14 @@ public class AlbumImplMySql implements AlbumDao {
     public Map<String, Integer> getTopAlbum(String guildId, String userId, Integer count, Integer lastDays) {
         final Map<String, Integer> topMap = new LinkedHashMap<>();
         try (final Connection connection = hikariDataSource.getConnection()) {
-            final String lastDaysQuery =
-                    lastDays == 0 ? "" : "AND Listens.Timestamp >= DATE(NOW()) - INTERVAL " + lastDays + " DAY ";
+            final String lastDaysQuery = lastDays == 0 ? ""
+                    : "AND Listens.Timestamp >= DATE(NOW()) - INTERVAL " + lastDays + " DAY ";
 
             final PreparedStatement preparedStatement = connection.prepareStatement(userId == null
-                    ?
-                    "SELECT Tracks.AlbumTitle, COUNT(*) AS Listener FROM `Listens` INNER JOIN Tracks ON Listens.TrackId=Tracks.Id WHERE Listens.GuildId=? " +
-                            lastDaysQuery + " GROUP BY `AlbumTitle` ORDER BY COUNT(*) DESC LIMIT ?"
-                    :
-                    "SELECT Tracks.AlbumTitle, COUNT(*) AS Listener FROM `Listens` INNER JOIN Tracks ON Listens.TrackId=Tracks.Id WHERE Listens.GuildId=? AND Listens.UserId=? " +
-                            lastDaysQuery + " GROUP BY `AlbumTitle` ORDER BY COUNT(*) DESC LIMIT ?");
+                    ? "SELECT Tracks.AlbumTitle, COUNT(*) AS Listener FROM `Listens` INNER JOIN Tracks ON Listens.TrackId=Tracks.Id WHERE Listens.GuildId=? "
+                            + lastDaysQuery + " GROUP BY `AlbumTitle` ORDER BY COUNT(*) DESC LIMIT ?"
+                    : "SELECT Tracks.AlbumTitle, COUNT(*) AS Listener FROM `Listens` INNER JOIN Tracks ON Listens.TrackId=Tracks.Id WHERE Listens.GuildId=? AND Listens.UserId=? "
+                            + lastDaysQuery + " GROUP BY `AlbumTitle` ORDER BY COUNT(*) DESC LIMIT ?");
             preparedStatement.setString(1, guildId);
             if (userId != null) {
                 preparedStatement.setString(2, userId);

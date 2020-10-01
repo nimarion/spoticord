@@ -77,7 +77,8 @@ public class MySqlDatabase implements Database {
     private void liquibaseUpdate(final liquibase.database.Database implementation) {
         Objects.requireNonNull(implementation, "Implementation is null!");
 
-        try (final Liquibase liquibase = new Liquibase(SCHEMA_FILE, new ClassLoaderResourceAccessor(), implementation)) {
+        try (final Liquibase liquibase = new Liquibase(SCHEMA_FILE, new ClassLoaderResourceAccessor(),
+                implementation)) {
             liquibase.update("");
         } catch (Exception ex) {
             ex.printStackTrace();

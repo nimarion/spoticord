@@ -36,10 +36,11 @@ public class UsersCommand extends Command {
     }
 
     public static EmbedBuilder getEmbed(final Guild guild, final User requester, final int days) {
-        return new EmbedBuilder().setFooter(FOOTER_FORMAT.formatted(
-                requester.getName(), requester.getDiscriminator(),
-                days == 0 ? "all" : days, days == 1 ? "" : "s", "Server"),
-                requester.getEffectiveAvatarUrl())
+        return new EmbedBuilder()
+                .setFooter(
+                        FOOTER_FORMAT.formatted(requester.getName(), requester.getDiscriminator(),
+                                days == 0 ? "all" : days, days == 1 ? "" : "s", "Server"),
+                        requester.getEffectiveAvatarUrl())
                 .setColor(guild.getSelfMember().getColor());
     }
 

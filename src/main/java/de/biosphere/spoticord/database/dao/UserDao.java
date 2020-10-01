@@ -21,8 +21,8 @@ public interface UserDao {
      * {@link String} as Snowflake id of a user and {@link Integer} as the amount of
      * entrys in the database.
      *
-     * @param guildId  the Snowflake id of the guild
-     * @param count    the length of the map
+     * @param guildId the Snowflake id of the guild
+     * @param count   the length of the map
      * @return A sorted map with <code>code</code> entrys
      */
     default Map<String, Integer> getTopUsers(final String guildId, final Integer count) {
