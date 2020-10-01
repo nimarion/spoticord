@@ -1,13 +1,13 @@
 package de.biosphere.spoticord.commands;
 
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
-import de.biosphere.spoticord.DiscordUtils;
+import de.biosphere.spoticord.utils.DiscordUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
+
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 public class TimeCommand extends Command {
 

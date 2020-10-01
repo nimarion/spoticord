@@ -1,11 +1,10 @@
 package de.biosphere.spoticord.commands;
 
-import java.util.Map;
-
-import de.biosphere.spoticord.DiscordUtils;
+import de.biosphere.spoticord.utils.DayParser;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
+
+import java.util.Map;
 
 public class AlbumCommand extends Command {
 
@@ -15,19 +14,17 @@ public class AlbumCommand extends Command {
 
     @Override
     public void execute(String[] args, Message message) {
-        final EmbedBuilder embedBuilder = getEmbed(message.getGuild(), message.getAuthor());
-        if (args.length == 0 || args[0].equalsIgnoreCase("server")) {
-            addListToEmbed(embedBuilder,
-                    getBot().getDatabase().getAlbumDao().getTopAlbum(message.getGuild().getId(), 10));
-        } else if (!message.getMentionedMembers().isEmpty()) {
-            final Member member = DiscordUtils.getAddressedMember(message);
-            addListToEmbed(embedBuilder,
-                    getBot().getDatabase().getAlbumDao().getTopAlbum(member.getGuild().getId(), member.getId(), 10));
-        } else {
-            embedBuilder.setDescription("+album [server,mention]");
-        }
-        message.getTextChannel().sendMessage(embedBuilder.build()).queue();
+        final DayParser.Parsed parsed = DayParser.get(args, message);
 
+        final EmbedBuilder embedBuilder = DayParser.getEmbed(message.getGuild(), message.getAuthor(), parsed.getDays(),
+                parsed.isServerStats());
+
+        final Map<String, Integer> topAlbum = getBot().getDatabase().getAlbumDao().getTopAlbum(
+                message.getGuild().getId(), parsed.isServerStats() ? null : parsed.getMember().getId(), 10,
+                parsed.getDays());
+
+        addListToEmbed(embedBuilder, topAlbum);
+        message.getChannel().sendMessage(embedBuilder.build()).queue();
     }
 
     private void addListToEmbed(final EmbedBuilder embedBuilder, final Map<String, Integer> topMap) {

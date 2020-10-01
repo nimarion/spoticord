@@ -1,15 +1,14 @@
 package de.biosphere.spoticord.database.impl.mysql;
 
+import com.zaxxer.hikari.HikariDataSource;
+import de.biosphere.spoticord.database.dao.UserDao;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.LinkedHashMap;
 import java.util.Map;
-
-import com.zaxxer.hikari.HikariDataSource;
-
-import de.biosphere.spoticord.database.dao.UserDao;
 
 public class UserImplMySql implements UserDao {
 
@@ -45,11 +44,15 @@ public class UserImplMySql implements UserDao {
     }
 
     @Override
-    public Map<String, Integer> getTopUsers(String guildId, Integer count) {
+    public Map<String, Integer> getTopUsers(String guildId, Integer count, Integer lastDays) {
         final Map<String, Integer> topMap = new LinkedHashMap<>();
         try (final Connection connection = hikariDataSource.getConnection()) {
-            final PreparedStatement preparedStatement = connection.prepareStatement(
-                    "SELECT UserId, COUNT(*) AS Listener FROM `Listens` WHERE GuildId=? GROUP BY `UserId` ORDER BY COUNT(*) DESC LIMIT ?");
+            final String lastDaysQuery = lastDays == 0 ? ""
+                    : "AND Listens.Timestamp >= DATE(NOW()) - INTERVAL " + lastDays + " DAY ";
+
+            final PreparedStatement preparedStatement = connection
+                    .prepareStatement("SELECT UserId, COUNT(*) AS Listener FROM `Listens` WHERE GuildId=? "
+                            + lastDaysQuery + "GROUP BY `UserId` ORDER BY COUNT(*) DESC LIMIT ?");
             preparedStatement.setString(1, guildId);
             preparedStatement.setInt(2, count);
 

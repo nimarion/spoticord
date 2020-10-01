@@ -1,4 +1,4 @@
-package de.biosphere.spoticord;
+package de.biosphere.spoticord.utils;
 
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
@@ -21,16 +21,20 @@ public class DiscordUtils {
 
     /**
      * @param message a {@link Message}
-     * @param index   the index of a mentioned member without the bot-mention at the start
+     * @param index   the index of a mentioned member without the bot-mention at the
+     *                start
      * @return a {@link Member}, when not found null
      */
     public static Member getRequiredMember(final Message message, final int index) {
         final List<Member> mentionedMembers = new LinkedList<>(message.getMentionedMembers());
-        if (mentionedMembers.isEmpty()) return null;
-        if (index < 0) return null;
+        if (mentionedMembers.isEmpty())
+            return null;
+        if (index < 0)
+            return null;
         final Member botMember = message.getGuild().getSelfMember();
         mentionedMembers.remove(botMember);
-        if (mentionedMembers.size() <= index) return null;
+        if (mentionedMembers.size() <= index)
+            return null;
         return mentionedMembers.get(index);
     }
 

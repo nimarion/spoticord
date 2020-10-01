@@ -1,13 +1,13 @@
 package de.biosphere.spoticord.commands;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-
-import de.biosphere.spoticord.DiscordUtils;
+import de.biosphere.spoticord.utils.DiscordUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 
 public class ClockCommand extends Command {
 
