@@ -1,4 +1,4 @@
-package de.biosphere.spoticord;
+package de.biosphere.spoticord.utils;
 
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
