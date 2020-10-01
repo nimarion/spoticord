@@ -6,7 +6,7 @@ public interface ArtistDao {
 
     /**
      * Returns a map of the artists with the most database entry on this guild. The
-     * <code>code</code> argument specifies the length of the map. Map contains
+     * <code>count</code> argument specifies the length of the map. Map contains
      * {@link String} as name of the artists and {@link Integer} as the amount of
      * entrys in the database.
      *
@@ -14,7 +14,7 @@ public interface ArtistDao {
      * @param userId   the Snowflake id of the user
      * @param count    the length of the map
      * @param lastDays the last days for data collection when 0 all data
-     * @return A sorted map with <code>code</code> entrys
+     * @return A sorted map with <code>count</code> entrys
      */
     Map<String, Integer> getTopArtists(final String guildId, final String userId, final Integer count,
             final Integer lastDays);

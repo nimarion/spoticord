@@ -15,6 +15,7 @@ public interface TrackDao {
     /**
      * 
      * @param guildId the Snowflake id of the guild
+     * @param userId  the Snowflake id of the user
      * @return the amount of listen database entrys
      */
     Integer getListensAmount();
@@ -34,11 +35,11 @@ public interface TrackDao {
 
     /**
      * 
-     * @param guildId
-     * @param userId
-     * @param count
-     * @param lastDays
-     * @return
+     * @param guildId  the Snowflake id of the guild
+     * @param userId   the Snowflake id of the user
+     * @param count    the length of the map
+     * @param lastDays the last days for data collection when 0 all data
+     * @return A sorted map with <code>count</code> entrys
      */
     Map<SpotifyTrack, Integer> getTopTracks(final String guildId, final String userId, final Integer count,
             final Integer lastDays);
