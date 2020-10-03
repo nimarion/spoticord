@@ -9,11 +9,7 @@ import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -53,9 +49,7 @@ public class CommandManager extends ListenerAdapter {
             final Optional<Command> optional = availableCommands.stream()
                     .filter(command -> command.getCommand().equalsIgnoreCase(getCommand(content, prefixType)))
                     .findFirst();
-            if (optional.isPresent()) {
-                optional.get().execute(getArguments(content, prefixType), event.getMessage());
-            }
+            optional.ifPresent(command -> command.execute(getArguments(content, prefixType), event.getMessage()));
         }
     }
 
