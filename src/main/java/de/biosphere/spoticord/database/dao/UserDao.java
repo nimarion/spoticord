@@ -16,29 +16,29 @@ public interface UserDao {
     Long getListenTime(final String guildId);
 
     /**
-     * Returns a map of the users with the most database entrys on a guild. The
+     * Returns a map of the users with the most database entries on a guild. The
      * <code>count</code> argument specifies the length of the map. Map contains
      * {@link String} as Snowflake id of a user and {@link Integer} as the amount of
-     * entrys in the database.
+     * entries in the database.
      *
      * @param guildId the Snowflake id of the guild
      * @param count   the length of the map
-     * @return A sorted map with <code>count</code> entrys
+     * @return A sorted map with <code>count</code> entries
      */
     default Map<String, Integer> getTopUsers(final String guildId, final Integer count) {
         return getTopUsers(guildId, count, 0);
     }
 
     /**
-     * Returns a map of the users with the most database entrys on a guild. The
+     * Returns a map of the users with the most database entries on a guild. The
      * <code>count</code> argument specifies the length of the map. Map contains
      * {@link String} as Snowflake id of a user and {@link Integer} as the amount of
-     * entrys in the database.
+     * entries in the database.
      *
      * @param guildId  the Snowflake id of the guild
      * @param count    the length of the map
      * @param lastDays the last days for data collection when 0 all data
-     * @return A sorted map with <code>count</code> entrys
+     * @return A sorted map with <code>count</code> entries
      */
     Map<String, Integer> getTopUsers(final String guildId, final Integer count, final Integer lastDays);
 
@@ -46,11 +46,11 @@ public interface UserDao {
      * Returns a map of the users with the highest listening time on a guild The
      * <code>count</code> argument specifies the length of the map. Map contains
      * {@link String} as Snowflake id of a user and {@link Integer} as the amount of
-     * entrys to be returned.
+     * entries to be returned.
      *
      * @param guildId the Snowflake id of the guild
      * @param count   the length of the map
-     * @return A sorted map with <code>count</code> entrys
+     * @return A sorted map with <code>count</code> entries
      */
     Map<String, Long> getTopListenersByTime(final String guildId, final Integer count);
 

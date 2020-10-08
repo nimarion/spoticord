@@ -1,12 +1,12 @@
 package de.biosphere.spoticord.commands;
 
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Message;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
-import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.Message;
 
 public class HelpCommand extends Command {
 
@@ -38,7 +38,7 @@ public class HelpCommand extends Command {
                     final String categoryCommands = commandList.stream().map(Command::getDescription)
                             .sorted(String::compareTo).map(string -> String.format("`%s`", string))
                             .collect(Collectors.joining("  "));
-                    embedBuilder.addField(entry.getKey().toString(), categoryCommands, false);
+                    embedBuilder.addField(entry.getKey(), categoryCommands, false);
                 });
     }
 
