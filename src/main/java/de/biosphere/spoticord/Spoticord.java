@@ -1,11 +1,10 @@
 package de.biosphere.spoticord;
 
-import java.util.EnumSet;
-
 import de.biosphere.spoticord.commands.CommandManager;
 import de.biosphere.spoticord.database.Database;
 import de.biosphere.spoticord.database.impl.mysql.MySqlDatabase;
 import de.biosphere.spoticord.handler.DiscordUserUpdateGameListener;
+import de.biosphere.spoticord.handler.MetricsCollector;
 import de.biosphere.spoticord.handler.StatisticsHandlerCollector;
 import io.prometheus.client.exporter.HTTPServer;
 import io.sentry.Sentry;
@@ -17,9 +16,12 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.EnumSet;
+import java.util.Timer;
+import java.util.concurrent.TimeUnit;
 
 public class Spoticord {
 
@@ -28,6 +30,7 @@ public class Spoticord {
     private final JDA jda;
     private final Database database;
     private final CommandManager commandManager;
+    private final Timer timer;
 
     public Spoticord() throws Exception {
         final long startTime = System.currentTimeMillis();
@@ -38,6 +41,8 @@ public class Spoticord {
                 Configuration.DATABASE_NAME == null ? "Tracks" : Configuration.DATABASE_NAME,
                 Configuration.DATABASE_PORT == null ? 3306 : Integer.valueOf(Configuration.DATABASE_PORT));
         logger.info("Database-Connection set up!");
+
+        this.timer = new Timer("Timer Executor");
 
         jda = initializeJDA();
         logger.info("JDA set up!");
@@ -59,6 +64,8 @@ public class Spoticord {
                 e.printStackTrace();
             }
         }));
+
+        this.timer.schedule(new MetricsCollector(this), 100, TimeUnit.SECONDS.toMillis(5));
 
         logger.info(String.format("Startup finished in %dms!", System.currentTimeMillis() - startTime));
     }
