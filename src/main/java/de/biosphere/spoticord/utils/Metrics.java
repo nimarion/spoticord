@@ -1,5 +1,6 @@
 package de.biosphere.spoticord.utils;
 
+import io.prometheus.client.Counter;
 import io.prometheus.client.Gauge;
 
 public class Metrics {
@@ -10,6 +11,8 @@ public class Metrics {
     public static final Gauge TOTAL_ALBUM_AMOUNT;
     public static final Gauge CURRENT_LISTEN_MEMBERS;
 
+    public static final Counter TRACKS_PER_MINUTE;
+
     static {
         TOTAL_TRACK_AMOUNT = Gauge.build().name("total_track_amount").help("Amount of tracks").register();
         TOTAL_ARTIST_AMOUNT = Gauge.build().name("total_artist_amount").help("Amount of artists").register();
@@ -17,6 +20,9 @@ public class Metrics {
         TOTAL_LISTEN_AMOUNT = Gauge.build().name("total_listen_amount").help("Amount of listen tracks")
                 .labelNames("guild").register();
         CURRENT_LISTEN_MEMBERS = Gauge.build().name("current_listen_members").help("Amount of listen members")
+                .labelNames("guild").register();
+
+        TRACKS_PER_MINUTE = Counter.build().name("tracks_per_minute").help("Tracks per minute")
                 .labelNames("guild").register();
     }
 
