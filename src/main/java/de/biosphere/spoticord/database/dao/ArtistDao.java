@@ -21,4 +21,9 @@ public interface ArtistDao {
 
     Map<String, Integer> getTopArtists(final String guildId, final Integer count, final Integer lastDays);
 
+    /**
+     * @return the amount of artist database entries
+     */
+    Integer getArtistAmount();
+
 }
