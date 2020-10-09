@@ -10,6 +10,7 @@ public class Metrics {
     public static final Gauge TOTAL_ARTIST_AMOUNT;
     public static final Gauge TOTAL_ALBUM_AMOUNT;
     public static final Gauge CURRENT_LISTEN_MEMBERS;
+    public static final Gauge CURRENT_PEAK_TIME;
 
     public static final Counter TRACKS_PER_MINUTE;
 
@@ -20,6 +21,8 @@ public class Metrics {
         TOTAL_LISTEN_AMOUNT = Gauge.build().name("total_listen_amount").help("Amount of listen tracks")
                 .labelNames("guild").register();
         CURRENT_LISTEN_MEMBERS = Gauge.build().name("current_listen_members").help("Amount of listen members")
+                .labelNames("guild").register();
+        CURRENT_PEAK_TIME = Gauge.build().name("current_peak_time").help("Current peak time")
                 .labelNames("guild").register();
 
         TRACKS_PER_MINUTE = Counter.build().name("tracks_per_minute").help("Tracks per minute")

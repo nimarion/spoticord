@@ -30,7 +30,10 @@ public class MetricsCollector extends TimerTask {
         for (final Guild guild : this.bot.getJDA().getGuilds()) {
             final String guildId = guild.getId();
             final int listensAmount = this.bot.getDatabase().getTrackDao().getListensAmount(guildId);
+            final Long mostListensTime = this.bot.getDatabase().getUserDao().getMostListensTime(guildId);
+
             Metrics.TOTAL_LISTEN_AMOUNT.labels(guildId).set(listensAmount);
+            Metrics.CURRENT_PEAK_TIME.labels(guildId).set(mostListensTime);
 
             final long listenCount =
                     guild.getMembers().stream().map(Member::getActivities).filter(this::checkActivities).count();
