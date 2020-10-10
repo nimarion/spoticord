@@ -30,7 +30,6 @@ public class Spoticord {
     private final JDA jda;
     private final Database database;
     private final CommandManager commandManager;
-    private final Timer timer;
 
     public Spoticord() throws Exception {
         final long startTime = System.currentTimeMillis();
@@ -42,7 +41,6 @@ public class Spoticord {
                 Configuration.DATABASE_PORT == null ? 3306 : Integer.valueOf(Configuration.DATABASE_PORT));
         logger.info("Database-Connection set up!");
 
-        this.timer = new Timer("Timer Executor");
 
         jda = initializeJDA();
         logger.info("JDA set up!");
@@ -51,8 +49,10 @@ public class Spoticord {
         logger.info("Command-Manager set up!");
 
         if (Configuration.PROMETHEUS_PORT != null) {
+            final Timer timer = new Timer("Metrics Timer");
             new HTTPServer(Integer.valueOf(Configuration.PROMETHEUS_PORT));
             new StatisticsHandlerCollector(this).register();
+            timer.schedule(new MetricsCollector(this), 100, TimeUnit.SECONDS.toMillis(5));
             logger.info("Prometheus set up!");
         }
 
@@ -64,8 +64,6 @@ public class Spoticord {
                 e.printStackTrace();
             }
         }));
-
-        this.timer.schedule(new MetricsCollector(this), 100, TimeUnit.SECONDS.toMillis(5));
 
         logger.info(String.format("Startup finished in %dms!", System.currentTimeMillis() - startTime));
     }
