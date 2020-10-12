@@ -10,7 +10,9 @@ services:
       - DATABASE_PASSWORD=123456
       - DATABASE_USER=root
       - DATABASE_HOST=mysql
+      - PROMETHEUS_PORT=8080
 
+    container_name: spoticord
     # Overrides default command so things don't shut down after the process ends.
     command: sleep infinity
 

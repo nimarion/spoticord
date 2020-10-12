@@ -11,6 +11,7 @@
         "vscjava.vscode-java-pack"
     ],
     "forwardPorts": [
-        3306
+        3306,
+        8080
     ]
 }

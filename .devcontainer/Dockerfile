@@ -6,3 +6,5 @@ COPY library-scripts/maven.sh /tmp/library-scripts/
 RUN apt-get update && bash /tmp/library-scripts/maven.sh "latest" "${SDKMAN_DIR}"
 
 RUN apt-get install gnupg2 openssh-client git -y
+
+EXPOSE 8080
