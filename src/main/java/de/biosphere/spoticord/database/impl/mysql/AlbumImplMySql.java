@@ -53,4 +53,18 @@ public class AlbumImplMySql implements AlbumDao {
         return getTopAlbum(guildId, null, count, lastDays);
     }
 
+    @Override
+    public Integer getAlbumAmount() {
+        try (final Connection connection = hikariDataSource.getConnection()) {
+            final PreparedStatement preparedStatement = connection
+                    .prepareStatement("SELECT COUNT(*) AS count FROM (SELECT DISTINCT AlbumTitle FROM Tracks) as T");
+            final ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                return resultSet.getInt("count");
+            }
+        } catch (final SQLException ex) {
+            ex.printStackTrace();
+        }
+        return 0;
+    }
 }

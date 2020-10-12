@@ -21,4 +21,9 @@ public interface AlbumDao {
 
     Map<String, Integer> getTopAlbum(final String guildId, final Integer count, final Integer lastDays);
 
+    /**
+     * @return the amount of albums database entries
+     */
+    Integer getAlbumAmount();
+
 }

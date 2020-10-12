@@ -4,6 +4,7 @@ import de.biosphere.spoticord.Spoticord;
 import io.prometheus.client.Collector;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -18,9 +19,16 @@ public class StatisticsHandlerCollector extends Collector {
 
     @Override
     public List<MetricFamilySamples> collect() {
-        return Collections.singletonList(
-                buildGauge("discord_ping", "Time in milliseconds between heartbeat and the heartbeat ack response",
-                        bot.getJDA().getGatewayPing()));
+        final long restPing = this.bot.getJDA().getRestPing().complete();
+        final long gatewayPing = this.bot.getJDA().getGatewayPing();
+
+        return Arrays.asList(
+                buildGauge("discord_ping_websocket",
+                        "Time in milliseconds between heartbeat and the heartbeat ack response", gatewayPing),
+                buildGauge("discord_ping_rest",
+                        "The time in milliseconds that discord took to respond to a REST request.", restPing),
+                buildGauge("discord_guilds",
+                        "Amount of all Guilds that the bot is connected to. ", this.bot.getJDA().getGuilds().size()));
     }
 
     private MetricFamilySamples buildGauge(String name, String help, double value) {
