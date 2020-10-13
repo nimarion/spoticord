@@ -4,6 +4,7 @@
     "service": "app",
     "workspaceFolder": "/workspace",
     "settings": {
+        "terminal.integrated.shell.linux": "/bin/zsh",
         "java.home": "/usr/local/openjdk-15",
         "maven.executable.path": "/usr/local/sdkman/candidates/maven/current/bin/mvn"
     },
