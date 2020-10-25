@@ -1,11 +1,10 @@
 package de.biosphere.spoticord;
 
-import java.util.EnumSet;
-
 import de.biosphere.spoticord.commands.CommandManager;
 import de.biosphere.spoticord.database.Database;
 import de.biosphere.spoticord.database.impl.mysql.MySqlDatabase;
 import de.biosphere.spoticord.handler.DiscordUserUpdateGameListener;
+import de.biosphere.spoticord.handler.MetricsCollector;
 import de.biosphere.spoticord.handler.StatisticsHandlerCollector;
 import io.prometheus.client.exporter.HTTPServer;
 import io.sentry.Sentry;
@@ -17,9 +16,12 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.EnumSet;
+import java.util.Timer;
+import java.util.concurrent.TimeUnit;
 
 public class Spoticord {
 
@@ -39,6 +41,7 @@ public class Spoticord {
                 Configuration.DATABASE_PORT == null ? 3306 : Integer.valueOf(Configuration.DATABASE_PORT));
         logger.info("Database-Connection set up!");
 
+
         jda = initializeJDA();
         logger.info("JDA set up!");
 
@@ -46,8 +49,10 @@ public class Spoticord {
         logger.info("Command-Manager set up!");
 
         if (Configuration.PROMETHEUS_PORT != null) {
+            final Timer timer = new Timer("Metrics Timer");
             new HTTPServer(Integer.valueOf(Configuration.PROMETHEUS_PORT));
             new StatisticsHandlerCollector(this).register();
+            timer.schedule(new MetricsCollector(this), 100, TimeUnit.SECONDS.toMillis(5));
             logger.info("Prometheus set up!");
         }
 

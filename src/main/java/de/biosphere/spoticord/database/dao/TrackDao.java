@@ -1,27 +1,35 @@
 package de.biosphere.spoticord.database.dao;
 
+import de.biosphere.spoticord.database.model.SpotifyTrack;
+
 import java.util.List;
 import java.util.Map;
-
-import de.biosphere.spoticord.database.model.SpotifyTrack;
 
 public interface TrackDao {
 
     /**
-     * @return the amount of track database entrys
+     * @return the amount of track database entries
      */
     Integer getTrackAmount();
 
     /**
-     * 
-     * @param guildId the Snowflake id of the guild
-     * @param userId  the Snowflake id of the user
-     * @return the amount of listen database entrys
+     * @return the amount of listen database entries
      */
     Integer getListensAmount();
 
+    /**
+     *
+     * @param guildId the Snowflake id of the guild
+     * @return the amount of listen database entries
+     */
     Integer getListensAmount(final String guildId);
 
+    /**
+     *
+     * @param guildId the Snowflake id of the guild
+     * @param userId  the Snowflake id of the user
+     * @return the amount of listen database entries
+     */
     Integer getListensAmount(final String guildId, final String userId);
 
     /**
@@ -39,7 +47,7 @@ public interface TrackDao {
      * @param userId   the Snowflake id of the user
      * @param count    the length of the map
      * @param lastDays the last days for data collection when 0 all data
-     * @return A sorted map with <code>count</code> entrys
+     * @return A sorted map with <code>count</code> entries
      */
     Map<SpotifyTrack, Integer> getTopTracks(final String guildId, final String userId, final Integer count,
             final Integer lastDays);

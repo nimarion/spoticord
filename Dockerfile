@@ -3,7 +3,7 @@ COPY src /usr/src/app/src
 COPY pom.xml /usr/src/app  
 RUN mvn -f /usr/src/app/pom.xml clean package
 
-FROM openjdk:14-jdk-slim
+FROM openjdk:15-jdk-slim
 COPY --from=build /usr/src/app/target/spoticord-*-SNAPSHOT-shaded.jar spoticord.jar
 
 EXPOSE 8080  

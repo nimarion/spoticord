@@ -1,5 +1,9 @@
 package de.biosphere.spoticord.database.impl.mysql;
 
+import com.zaxxer.hikari.HikariDataSource;
+import de.biosphere.spoticord.database.dao.TrackDao;
+import de.biosphere.spoticord.database.model.SpotifyTrack;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -8,11 +12,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-
-import com.zaxxer.hikari.HikariDataSource;
-
-import de.biosphere.spoticord.database.dao.TrackDao;
-import de.biosphere.spoticord.database.model.SpotifyTrack;
 
 public class TrackImplMySql implements TrackDao {
 
@@ -133,10 +132,9 @@ public class TrackImplMySql implements TrackDao {
     }
 
     private SpotifyTrack getTrackFromResultSet(final ResultSet resultSet) throws SQLException {
-        final SpotifyTrack spotifyTrack = new SpotifyTrack(resultSet.getString("Id"), resultSet.getString("Artists"),
+        return new SpotifyTrack(resultSet.getString("Id"), resultSet.getString("Artists"),
                 resultSet.getString("AlbumTitle"), resultSet.getString("TrackTitle"),
                 resultSet.getString("AlbumImageUrl"), resultSet.getLong("Duration"));
-        return spotifyTrack;
     }
 
     @Override

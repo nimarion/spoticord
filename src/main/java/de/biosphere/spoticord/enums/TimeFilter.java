@@ -26,11 +26,12 @@ public enum TimeFilter {
     }
 
     public static TimeFilter getFilter(final String value) {
+        final String trimmed = value.trim();
         for (final TimeFilter timeFilter : values()) {
-            if (timeFilter.name().equalsIgnoreCase(value)) return timeFilter;
+            if (timeFilter.name().equalsIgnoreCase(trimmed)) return timeFilter;
             if(timeFilter.getAlias() == null) continue;
             for (final String alias : timeFilter.getAlias()) {
-                if (alias.equalsIgnoreCase(value)) return timeFilter;
+                if (alias.equalsIgnoreCase(trimmed)) return timeFilter;
             }
         }
         return CUSTOM;

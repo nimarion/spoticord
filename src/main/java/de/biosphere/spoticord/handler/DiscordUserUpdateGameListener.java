@@ -2,6 +2,7 @@ package de.biosphere.spoticord.handler;
 
 import de.biosphere.spoticord.Spoticord;
 import de.biosphere.spoticord.database.model.SpotifyTrack;
+import de.biosphere.spoticord.utils.Metrics;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.RichPresence;
 import net.dv8tion.jda.api.events.user.UserActivityStartEvent;
@@ -42,6 +43,7 @@ public class DiscordUserUpdateGameListener extends ListenerAdapter {
                 richPresence.getLargeImage().getUrl(),
                 richPresence.getTimestamps().getEnd() - richPresence.getTimestamps().getStart());
         bot.getDatabase().getTrackDao().insertTrack(spotifyTrack, event.getMember().getId(), event.getGuild().getId());
+        Metrics.TRACKS_PER_MINUTE.labels(event.getGuild().getId()).inc();
     }
 
     private boolean checkActivity(final Activity activity) {
