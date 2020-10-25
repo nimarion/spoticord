@@ -87,13 +87,14 @@ public class MySqlDatabase implements Database {
 
     public String getSizeOfTable(final String table) {
         try (final Connection connection = dataSource.getConnection()) {
-            final PreparedStatement preparedStatement = connection.prepareStatement(
+            try (final PreparedStatement preparedStatement = connection.prepareStatement(
                     "SELECT table_name AS `Table`, round(((data_length + index_length) / 1024 / 1024), 2) `Size in MB` FROM information_schema.TABLES WHERE table_schema = \""
                             + (Configuration.DATABASE_NAME == null ? "Tracks" : Configuration.DATABASE_NAME)
-                            + "\" AND table_name = \"" + table + "\";");
-            final ResultSet resultSet = preparedStatement.executeQuery();
-            if (resultSet.next()) {
-                return resultSet.getString("Size in MB");
+                            + "\" AND table_name = \"" + table + "\";")) {
+                final ResultSet resultSet = preparedStatement.executeQuery();
+                if (resultSet.next()) {
+                    return resultSet.getString("Size in MB");
+                }
             }
         } catch (final SQLException ex) {
             ex.printStackTrace();

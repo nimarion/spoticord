@@ -24,11 +24,12 @@ public class TrackImplMySql implements TrackDao {
     @Override
     public Integer getTrackAmount() {
         try (final Connection connection = hikariDataSource.getConnection()) {
-            final PreparedStatement preparedStatement = connection
-                    .prepareStatement("SELECT COUNT(*) AS Count FROM Tracks");
-            final ResultSet resultSet = preparedStatement.executeQuery();
-            if (resultSet.next()) {
-                return resultSet.getInt("Count");
+            try (final PreparedStatement preparedStatement = connection
+                    .prepareStatement("SELECT COUNT(*) AS Count FROM Tracks")) {
+                final ResultSet resultSet = preparedStatement.executeQuery();
+                if (resultSet.next()) {
+                    return resultSet.getInt("Count");
+                }
             }
         } catch (final SQLException ex) {
             ex.printStackTrace();
@@ -44,11 +45,12 @@ public class TrackImplMySql implements TrackDao {
     @Override
     public Integer getListensAmount() {
         try (final Connection connection = hikariDataSource.getConnection()) {
-            final PreparedStatement preparedStatement = connection
-                    .prepareStatement("SELECT COUNT(*) AS Count FROM `Listens`");
-            final ResultSet resultSet = preparedStatement.executeQuery();
-            if (resultSet.next()) {
-                return resultSet.getInt("Count");
+            try (final PreparedStatement preparedStatement = connection
+                    .prepareStatement("SELECT COUNT(*) AS Count FROM `Listens`")) {
+                final ResultSet resultSet = preparedStatement.executeQuery();
+                if (resultSet.next()) {
+                    return resultSet.getInt("Count");
+                }
             }
         } catch (final SQLException ex) {
             ex.printStackTrace();
@@ -59,16 +61,17 @@ public class TrackImplMySql implements TrackDao {
     @Override
     public Integer getListensAmount(String guildId, String userId) {
         try (final Connection connection = hikariDataSource.getConnection()) {
-            final PreparedStatement preparedStatement = connection
+            try (final PreparedStatement preparedStatement = connection
                     .prepareStatement(userId == null ? "SELECT COUNT(*) AS Count FROM `Listens` WHERE GuildId=?"
-                            : "SELECT COUNT(*) AS Count FROM `Listens` WHERE GuildId=? AND UserId=?");
-            preparedStatement.setString(1, guildId);
-            if (userId != null) {
-                preparedStatement.setString(2, userId);
-            }
-            final ResultSet resultSet = preparedStatement.executeQuery();
-            if (resultSet.next()) {
-                return resultSet.getInt("Count");
+                            : "SELECT COUNT(*) AS Count FROM `Listens` WHERE GuildId=? AND UserId=?")) {
+                preparedStatement.setString(1, guildId);
+                if (userId != null) {
+                    preparedStatement.setString(2, userId);
+                }
+                final ResultSet resultSet = preparedStatement.executeQuery();
+                if (resultSet.next()) {
+                    return resultSet.getInt("Count");
+                }
             }
         } catch (final SQLException ex) {
             ex.printStackTrace();
@@ -79,22 +82,24 @@ public class TrackImplMySql implements TrackDao {
     @Override
     public void insertTrack(SpotifyTrack spotifyTrack, String userId, String guildId) {
         try (final Connection connection = hikariDataSource.getConnection()) {
-            final PreparedStatement preparedStatement = connection.prepareStatement(
-                    "INSERT IGNORE INTO `Tracks` (`Id`, `Artists`, `AlbumImageUrl`, `AlbumTitle`, `TrackTitle`, `Duration`) VALUES (?, ?, ?, ?, ?, ?)");
-            preparedStatement.setString(1, spotifyTrack.id());
-            preparedStatement.setString(2, spotifyTrack.artists());
-            preparedStatement.setString(3, spotifyTrack.albumImageUrl());
-            preparedStatement.setString(4, spotifyTrack.albumTitle());
-            preparedStatement.setString(5, spotifyTrack.trackTitle());
-            preparedStatement.setLong(6, spotifyTrack.duration());
-            preparedStatement.execute();
+            try (final PreparedStatement preparedStatement = connection.prepareStatement(
+                    "INSERT IGNORE INTO `Tracks` (`Id`, `Artists`, `AlbumImageUrl`, `AlbumTitle`, `TrackTitle`, `Duration`) VALUES (?, ?, ?, ?, ?, ?)")) {
+                preparedStatement.setString(1, spotifyTrack.id());
+                preparedStatement.setString(2, spotifyTrack.artists());
+                preparedStatement.setString(3, spotifyTrack.albumImageUrl());
+                preparedStatement.setString(4, spotifyTrack.albumTitle());
+                preparedStatement.setString(5, spotifyTrack.trackTitle());
+                preparedStatement.setLong(6, spotifyTrack.duration());
+                preparedStatement.execute();
+            }
 
-            final PreparedStatement preparedStatement2 = connection.prepareStatement(
-                    "INSERT INTO `Listens` (`Id`, `Timestamp`, `TrackId`, `GuildId`, `UserId`) VALUES (NULL, CURRENT_TIMESTAMP, ?, ?, ?)");
-            preparedStatement2.setString(1, spotifyTrack.id());
-            preparedStatement2.setString(2, guildId);
-            preparedStatement2.setString(3, userId);
-            preparedStatement2.execute();
+            try (final PreparedStatement preparedStatement2 = connection.prepareStatement(
+                    "INSERT INTO `Listens` (`Id`, `Timestamp`, `TrackId`, `GuildId`, `UserId`) VALUES (NULL, CURRENT_TIMESTAMP, ?, ?, ?)")) {
+                preparedStatement2.setString(1, spotifyTrack.id());
+                preparedStatement2.setString(2, guildId);
+                preparedStatement2.setString(3, userId);
+                preparedStatement2.execute();
+            }
         } catch (final SQLException ex) {
             ex.printStackTrace();
         }
@@ -106,24 +111,25 @@ public class TrackImplMySql implements TrackDao {
         try (final Connection connection = hikariDataSource.getConnection()) {
             final String lastDaysQuery = lastDays == 0 ? ""
                     : "AND Listens.Timestamp >= DATE(NOW()) - INTERVAL " + lastDays + " DAY ";
-            final PreparedStatement preparedStatement = connection.prepareStatement(userId == null
+            try (final PreparedStatement preparedStatement = connection.prepareStatement(userId == null
                     ? "SELECT Tracks.*, COUNT(*) AS Listener FROM `Listens` INNER JOIN Tracks ON Listens.TrackId=Tracks.Id WHERE Listens.GuildId=? "
                             + lastDaysQuery + "GROUP BY `TrackId` ORDER BY COUNT(*) DESC LIMIT ?"
                     : "SELECT Tracks.*, COUNT(*) AS Listener FROM `Listens` INNER JOIN Tracks ON Listens.TrackId=Tracks.Id WHERE GuildId=? AND UserId=? "
-                            + lastDaysQuery + "GROUP BY `TrackId` ORDER BY COUNT(*) DESC LIMIT ?");
-            preparedStatement.setString(1, guildId);
-            if (userId != null) {
-                preparedStatement.setString(2, userId);
-                preparedStatement.setInt(3, count);
-            } else {
-                preparedStatement.setInt(2, count);
-            }
+                            + lastDaysQuery + "GROUP BY `TrackId` ORDER BY COUNT(*) DESC LIMIT ?")) {
+                preparedStatement.setString(1, guildId);
+                if (userId != null) {
+                    preparedStatement.setString(2, userId);
+                    preparedStatement.setInt(3, count);
+                } else {
+                    preparedStatement.setInt(2, count);
+                }
 
-            final ResultSet resultSet = preparedStatement.executeQuery();
-            while (resultSet.next()) {
-                final SpotifyTrack spotifyTrack = getTrackFromResultSet(resultSet);
-                final Integer listener = resultSet.getInt("Listener");
-                topMap.put(spotifyTrack, listener);
+                final ResultSet resultSet = preparedStatement.executeQuery();
+                while (resultSet.next()) {
+                    final SpotifyTrack spotifyTrack = getTrackFromResultSet(resultSet);
+                    final Integer listener = resultSet.getInt("Listener");
+                    topMap.put(spotifyTrack, listener);
+                }
             }
         } catch (final SQLException ex) {
             ex.printStackTrace();
@@ -146,17 +152,18 @@ public class TrackImplMySql implements TrackDao {
     public List<SpotifyTrack> getLastTracks(String guildId, String userId) {
         final List<SpotifyTrack> tracks = new LinkedList<>();
         try (final Connection connection = hikariDataSource.getConnection()) {
-            final PreparedStatement preparedStatement = connection.prepareStatement(userId == null
+            try (final PreparedStatement preparedStatement = connection.prepareStatement(userId == null
                     ? "SELECT Tracks.* FROM `Listens` INNER JOIN Tracks ON Listens.TrackId=Tracks.Id WHERE GuildId=? ORDER BY `Listens`.`Timestamp`  DESC LIMIT 10"
-                    : "SELECT Tracks.* FROM `Listens` INNER JOIN Tracks ON Listens.TrackId=Tracks.Id WHERE GuildId=? AND UserId=? ORDER BY `Listens`.`Timestamp`  DESC LIMIT 10");
-            preparedStatement.setString(1, guildId);
-            if (userId != null) {
-                preparedStatement.setString(2, userId);
-            }
-            final ResultSet resultSet = preparedStatement.executeQuery();
-            while (resultSet.next()) {
-                final SpotifyTrack spotifyTrack = getTrackFromResultSet(resultSet);
-                tracks.add(spotifyTrack);
+                    : "SELECT Tracks.* FROM `Listens` INNER JOIN Tracks ON Listens.TrackId=Tracks.Id WHERE GuildId=? AND UserId=? ORDER BY `Listens`.`Timestamp`  DESC LIMIT 10")) {
+                preparedStatement.setString(1, guildId);
+                if (userId != null) {
+                    preparedStatement.setString(2, userId);
+                }
+                final ResultSet resultSet = preparedStatement.executeQuery();
+                while (resultSet.next()) {
+                    final SpotifyTrack spotifyTrack = getTrackFromResultSet(resultSet);
+                    tracks.add(spotifyTrack);
+                }
             }
         } catch (SQLException ex) {
             ex.printStackTrace();
