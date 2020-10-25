@@ -6,8 +6,6 @@ services:
     env_file: .env
     depends_on:
     - db
-    links:
-    - db
   db:
     image: mysql:8
     restart: always

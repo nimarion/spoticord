@@ -29,7 +29,7 @@
         <dependency>
             <groupId>net.dv8tion</groupId>
             <artifactId>JDA</artifactId>
-            <version>4.2.0_205</version>
+            <version>4.2.0_209</version>
             <exclusions>
                 <exclusion>
                     <groupId>club.minnced</groupId>
@@ -41,7 +41,7 @@
         <dependency>
             <groupId>io.sentry</groupId>
             <artifactId>sentry-logback</artifactId>
-            <version>1.7.30</version>
+            <version>3.1.1</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.reflections/reflections -->
         <dependency>
@@ -59,7 +59,7 @@
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <version>8.0.21</version>
+            <version>8.0.22</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/net.jodah/expiringmap -->
         <dependency>
@@ -77,7 +77,7 @@
         <dependency>
             <groupId>org.liquibase</groupId>
             <artifactId>liquibase-core</artifactId>
-            <version>4.0.0</version>
+            <version>4.1.1</version>
         </dependency>
     </dependencies>
 
