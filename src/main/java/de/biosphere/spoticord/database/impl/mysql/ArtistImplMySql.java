@@ -24,25 +24,23 @@ public class ArtistImplMySql implements ArtistDao {
         try (final Connection connection = hikariDataSource.getConnection()) {
             final String lastDaysQuery = lastDays == 0 ? ""
                     : "AND Listens.Timestamp >= DATE(NOW()) - INTERVAL " + lastDays + " DAY ";
-
-            final PreparedStatement preparedStatement = connection.prepareStatement(userId == null
-                    ?
-                    "SELECT Tracks.Artists, COUNT(*) AS Listener FROM `Listens` INNER JOIN Tracks ON Listens.TrackId=Tracks.Id WHERE Listens.GuildId=? "
+            try (final PreparedStatement preparedStatement = connection.prepareStatement(userId == null
+                    ? "SELECT Tracks.Artists, COUNT(*) AS Listener FROM `Listens` INNER JOIN Tracks ON Listens.TrackId=Tracks.Id WHERE Listens.GuildId=? "
                             + lastDaysQuery + " GROUP BY `Artists` ORDER BY COUNT(*) DESC LIMIT ?"
-                    :
-                    "SELECT Tracks.Artists, COUNT(*) AS Listener FROM `Listens` INNER JOIN Tracks ON Listens.TrackId=Tracks.Id WHERE Listens.GuildId=? AND Listens.UserId=? "
-                            + lastDaysQuery + "GROUP BY `Artists` ORDER BY COUNT(*) DESC LIMIT ?");
-            preparedStatement.setString(1, guildId);
-            if (userId != null) {
-                preparedStatement.setString(2, userId);
-                preparedStatement.setInt(3, count);
-            } else {
-                preparedStatement.setInt(2, count);
-            }
+                    : "SELECT Tracks.Artists, COUNT(*) AS Listener FROM `Listens` INNER JOIN Tracks ON Listens.TrackId=Tracks.Id WHERE Listens.GuildId=? AND Listens.UserId=? "
+                            + lastDaysQuery + "GROUP BY `Artists` ORDER BY COUNT(*) DESC LIMIT ?")) {
+                preparedStatement.setString(1, guildId);
+                if (userId != null) {
+                    preparedStatement.setString(2, userId);
+                    preparedStatement.setInt(3, count);
+                } else {
+                    preparedStatement.setInt(2, count);
+                }
 
-            final ResultSet resultSet = preparedStatement.executeQuery();
-            while (resultSet.next()) {
-                topMap.put(resultSet.getString("Artists"), resultSet.getInt("Listener"));
+                final ResultSet resultSet = preparedStatement.executeQuery();
+                while (resultSet.next()) {
+                    topMap.put(resultSet.getString("Artists"), resultSet.getInt("Listener"));
+                }
             }
         } catch (final SQLException ex) {
             ex.printStackTrace();

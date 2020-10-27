@@ -28,16 +28,19 @@ public class UserImplMySql implements UserDao {
         try (final Connection connection = hikariDataSource.getConnection()) {
             final String lastDaysQuery = lastDays == 0 ? ""
                     : " AND Listens.Timestamp >= DATE(NOW()) - INTERVAL " + lastDays + " DAY";
-            final PreparedStatement preparedStatement = connection.prepareStatement(userId == null
-                    ? "SELECT SUM(Tracks.Duration) AS Duration FROM `Listens` INNER JOIN Tracks ON Listens.TrackId=Tracks.Id WHERE Listens.GuildId=?" + lastDaysQuery
-                    : "SELECT SUM(Tracks.Duration) AS Duration FROM `Listens` INNER JOIN Tracks ON Listens.TrackId=Tracks.Id WHERE Listens.GuildId=? AND Listens.UserId=?" + lastDaysQuery);
-            preparedStatement.setString(1, guildId);
-            if (userId != null) {
-                preparedStatement.setString(2, userId);
-            }
-            final ResultSet resultSet = preparedStatement.executeQuery();
-            if (resultSet.next()) {
-                return resultSet.getLong("Duration");
+            try (final PreparedStatement preparedStatement = connection.prepareStatement(userId == null
+                    ? "SELECT SUM(Tracks.Duration) AS Duration FROM `Listens` INNER JOIN Tracks ON Listens.TrackId=Tracks.Id WHERE Listens.GuildId=?"
+                            + lastDaysQuery
+                    : "SELECT SUM(Tracks.Duration) AS Duration FROM `Listens` INNER JOIN Tracks ON Listens.TrackId=Tracks.Id WHERE Listens.GuildId=? AND Listens.UserId=?"
+                            + lastDaysQuery)) {
+                preparedStatement.setString(1, guildId);
+                if (userId != null) {
+                    preparedStatement.setString(2, userId);
+                }
+                final ResultSet resultSet = preparedStatement.executeQuery();
+                if (resultSet.next()) {
+                    return resultSet.getLong("Duration");
+                }
             }
         } catch (final SQLException ex) {
             ex.printStackTrace();
@@ -51,17 +54,17 @@ public class UserImplMySql implements UserDao {
         try (final Connection connection = hikariDataSource.getConnection()) {
             final String lastDaysQuery = lastDays == 0 ? ""
                     : "AND Listens.Timestamp >= DATE(NOW()) - INTERVAL " + lastDays + " DAY ";
-
-            final PreparedStatement preparedStatement = connection
+            try (final PreparedStatement preparedStatement = connection
                     .prepareStatement("SELECT UserId, COUNT(*) AS Listener FROM `Listens` WHERE GuildId=? "
-                            + lastDaysQuery + "GROUP BY `UserId` ORDER BY COUNT(*) DESC LIMIT ?");
-            preparedStatement.setString(1, guildId);
-            preparedStatement.setInt(2, count);
+                            + lastDaysQuery + "GROUP BY `UserId` ORDER BY COUNT(*) DESC LIMIT ?")) {
+                preparedStatement.setString(1, guildId);
+                preparedStatement.setInt(2, count);
 
-            final ResultSet resultSet = preparedStatement.executeQuery();
+                final ResultSet resultSet = preparedStatement.executeQuery();
 
-            while (resultSet.next()) {
-                topMap.put(resultSet.getString("UserId"), resultSet.getInt("Listener"));
+                while (resultSet.next()) {
+                    topMap.put(resultSet.getString("UserId"), resultSet.getInt("Listener"));
+                }
             }
         } catch (final SQLException ex) {
             ex.printStackTrace();
@@ -75,15 +78,16 @@ public class UserImplMySql implements UserDao {
         try (final Connection connection = hikariDataSource.getConnection()) {
             final String lastDaysQuery = lastDays == 0 ? ""
                     : "AND Listens.Timestamp >= DATE(NOW()) - INTERVAL " + lastDays + " DAY ";
-            final PreparedStatement preparedStatement = connection.prepareStatement(
-                    "SELECT SUM(Tracks.Duration) AS Duration, Listens.UserId  FROM `Listens` INNER JOIN Tracks ON Listens.TrackId=Tracks.Id WHERE Listens.GuildId=? " +
-                            lastDaysQuery + " GROUP BY Listens.UserId ORDER BY Duration DESC LIMIT ?");
-            preparedStatement.setString(1, guildId);
-            preparedStatement.setInt(2, count);
+            try (final PreparedStatement preparedStatement = connection.prepareStatement(
+                    "SELECT SUM(Tracks.Duration) AS Duration, Listens.UserId  FROM `Listens` INNER JOIN Tracks ON Listens.TrackId=Tracks.Id WHERE Listens.GuildId=? "
+                            + lastDaysQuery + " GROUP BY Listens.UserId ORDER BY Duration DESC LIMIT ?")) {
+                preparedStatement.setString(1, guildId);
+                preparedStatement.setInt(2, count);
 
-            final ResultSet resultSet = preparedStatement.executeQuery();
-            while (resultSet.next()) {
-                topMap.put(resultSet.getString("UserId"), resultSet.getLong("Duration"));
+                final ResultSet resultSet = preparedStatement.executeQuery();
+                while (resultSet.next()) {
+                    topMap.put(resultSet.getString("UserId"), resultSet.getLong("Duration"));
+                }
             }
         } catch (final SQLException ex) {
             ex.printStackTrace();
@@ -94,11 +98,12 @@ public class UserImplMySql implements UserDao {
     @Override
     public void deleteUser(String guildId, String userId) {
         try (final Connection connection = hikariDataSource.getConnection()) {
-            final PreparedStatement preparedStatement = connection
-                    .prepareStatement("DELETE FROM Listens WHERE GuildId=? AND UserId=?");
-            preparedStatement.setString(1, guildId);
-            preparedStatement.setString(2, userId);
-            preparedStatement.execute();
+            try (final PreparedStatement preparedStatement = connection
+                    .prepareStatement("DELETE FROM Listens WHERE GuildId=? AND UserId=?")) {
+                preparedStatement.setString(1, guildId);
+                preparedStatement.setString(2, userId);
+                preparedStatement.execute();
+            }
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
@@ -113,21 +118,22 @@ public class UserImplMySql implements UserDao {
     @Override
     public Long getMostListensTime(String guildId, String userId) {
         try (final Connection connection = hikariDataSource.getConnection()) {
-            final PreparedStatement preparedStatement = connection.prepareStatement(userId == null
+            try (final PreparedStatement preparedStatement = connection.prepareStatement(userId == null
                     ? "SELECT SEC_TO_TIME(AVG(TIME_TO_SEC(cast(Timestamp as Time)))) AS result FROM Listens WHERE GuildId=?"
-                    : "SELECT SEC_TO_TIME(AVG(TIME_TO_SEC(cast(Timestamp as Time)))) AS result FROM Listens WHERE GuildId=? AND UserId=?");
-            preparedStatement.setString(1, guildId);
-            if (userId != null) {
-                preparedStatement.setString(2, userId);
-            }
-            final ResultSet resultSet = preparedStatement.executeQuery();
-            if (resultSet.next()) {
-                return resultSet.getTime("result").getTime();
+                    : "SELECT SEC_TO_TIME(AVG(TIME_TO_SEC(cast(Timestamp as Time)))) AS result FROM Listens WHERE GuildId=? AND UserId=?")) {
+                preparedStatement.setString(1, guildId);
+                if (userId != null) {
+                    preparedStatement.setString(2, userId);
+                }
+                final ResultSet resultSet = preparedStatement.executeQuery();
+                if (resultSet.next() && resultSet.getString("result") != null) {
+                    return resultSet.getTime("result").getTime();
+                }
             }
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
-        return null;
+        return 0L;
     }
 
 }
