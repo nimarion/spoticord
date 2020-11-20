@@ -43,7 +43,7 @@ public enum TimeShortcut {
                 if (Character.toLowerCase(value) == Character.toLowerCase(character)) return timeShortcut;
             }
         }
-        return null;
+        return defaultValue;
     }
 
     public static List<Character> getShortcuts() {
