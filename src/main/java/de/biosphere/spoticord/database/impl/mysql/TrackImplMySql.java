@@ -113,9 +113,9 @@ public class TrackImplMySql implements TrackDao {
                     : "AND Listens.Timestamp >= DATE(NOW()) - INTERVAL " + lastDays + " DAY ";
             try (final PreparedStatement preparedStatement = connection.prepareStatement(userId == null
                     ? "SELECT Tracks.*, COUNT(*) AS Listener FROM `Listens` INNER JOIN Tracks ON Listens.TrackId=Tracks.Id WHERE Listens.GuildId=? "
-                            + lastDaysQuery + "GROUP BY `TrackId` ORDER BY COUNT(*) DESC LIMIT ?"
-                    : "SELECT Tracks.*, COUNT(*) AS Listener FROM `Listens` INNER JOIN Tracks ON Listens.TrackId=Tracks.Id WHERE GuildId=? AND UserId=? "
-                            + lastDaysQuery + "GROUP BY `TrackId` ORDER BY COUNT(*) DESC LIMIT ?")) {
+                            + lastDaysQuery + "GROUP BY Listens.`TrackId` ORDER BY COUNT(*) DESC LIMIT ?"
+                    : "SELECT Tracks.*, COUNT(*) AS Listener FROM `Listens` INNER JOIN Tracks ON Listens.TrackId=Tracks.Id WHERE Listens.GuildId=? AND Listens.UserId=? "
+                            + lastDaysQuery + "GROUP BY Listens.`TrackId` ORDER BY COUNT(*) DESC LIMIT ?")) {
                 preparedStatement.setString(1, guildId);
                 if (userId != null) {
                     preparedStatement.setString(2, userId);
