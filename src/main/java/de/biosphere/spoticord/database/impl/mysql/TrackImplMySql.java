@@ -109,13 +109,13 @@ public class TrackImplMySql implements TrackDao {
     public Map<SpotifyTrack, Integer> getTopTracks(String guildId, String userId, Integer count, Integer lastDays) {
         final Map<SpotifyTrack, Integer> topMap = new LinkedHashMap<>();
         try (final Connection connection = hikariDataSource.getConnection()) {
-            final String lastDaysQuery = lastDays == 0 ? ""
-                    : "AND Listens.Timestamp >= DATE(NOW()) - INTERVAL " + lastDays + " DAY ";
             try (final PreparedStatement preparedStatement = connection.prepareStatement(userId == null
                     ? "SELECT Tracks.*, COUNT(*) AS Listener FROM `Listens` INNER JOIN Tracks ON Listens.TrackId=Tracks.Id WHERE Listens.GuildId=? "
-                            + lastDaysQuery + "GROUP BY Listens.`TrackId` ORDER BY COUNT(*) DESC LIMIT ?"
+                            + MySqlDatabase.getTimestampQuery(lastDays)
+                            + "GROUP BY Listens.`TrackId` ORDER BY COUNT(*) DESC LIMIT ?"
                     : "SELECT Tracks.*, COUNT(*) AS Listener FROM `Listens` INNER JOIN Tracks ON Listens.TrackId=Tracks.Id WHERE Listens.GuildId=? AND Listens.UserId=? "
-                            + lastDaysQuery + "GROUP BY Listens.`TrackId` ORDER BY COUNT(*) DESC LIMIT ?")) {
+                            + MySqlDatabase.getTimestampQuery(lastDays)
+                            + "GROUP BY Listens.`TrackId` ORDER BY COUNT(*) DESC LIMIT ?")) {
                 preparedStatement.setString(1, guildId);
                 if (userId != null) {
                     preparedStatement.setString(2, userId);
