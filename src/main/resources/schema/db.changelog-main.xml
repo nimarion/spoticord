@@ -4,4 +4,5 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
     <include file="0000_initial_database_setup.sql" relativeToChangelogFile="true"/>
     <include file="0001_add_timestamp_index.sql" relativeToChangelogFile="true"/>
+    <include file="0002_add_missing_timestamp_index.sql" relativeToChangelogFile="true"/>
 </databaseChangeLog>
