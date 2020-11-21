@@ -19,7 +19,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -130,6 +132,14 @@ public class MySqlDatabase implements Database {
     private void setupLiquibaseLogger() {
         final Logger liquibase = Logger.getLogger("liquibase");
         liquibase.setLevel(Level.SEVERE);
+    }
+
+    public static Timestamp getTimestamp(int daysBack) {
+        return new Timestamp(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(daysBack));
+    }
+
+    public static String getTimestampQuery(int daysBack) {
+        return daysBack == 0 ? "" : String.format("AND Listens.Timestamp between '%s' and '%s'", getTimestamp(daysBack), getTimestamp(0));
     }
 
 }

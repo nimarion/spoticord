@@ -26,13 +26,11 @@ public class UserImplMySql implements UserDao {
     @Override
     public Long getListenTime(String guildId, String userId, Integer lastDays) {
         try (final Connection connection = hikariDataSource.getConnection()) {
-            final String lastDaysQuery = lastDays == 0 ? ""
-                    : " AND Listens.Timestamp >= DATE(NOW()) - INTERVAL " + lastDays + " DAY";
             try (final PreparedStatement preparedStatement = connection.prepareStatement(userId == null
                     ? "SELECT SUM(Tracks.Duration) AS Duration FROM `Listens` INNER JOIN Tracks ON Listens.TrackId=Tracks.Id WHERE Listens.GuildId=?"
-                            + lastDaysQuery
+                            + MySqlDatabase.getTimestampQuery(lastDays)
                     : "SELECT SUM(Tracks.Duration) AS Duration FROM `Listens` INNER JOIN Tracks ON Listens.TrackId=Tracks.Id WHERE Listens.GuildId=? AND Listens.UserId=?"
-                            + lastDaysQuery)) {
+                            + MySqlDatabase.getTimestampQuery(lastDays))) {
                 preparedStatement.setString(1, guildId);
                 if (userId != null) {
                     preparedStatement.setString(2, userId);
@@ -52,11 +50,9 @@ public class UserImplMySql implements UserDao {
     public Map<String, Integer> getTopUsers(String guildId, Integer count, Integer lastDays) {
         final Map<String, Integer> topMap = new LinkedHashMap<>();
         try (final Connection connection = hikariDataSource.getConnection()) {
-            final String lastDaysQuery = lastDays == 0 ? ""
-                    : "AND Listens.Timestamp >= DATE(NOW()) - INTERVAL " + lastDays + " DAY ";
             try (final PreparedStatement preparedStatement = connection
                     .prepareStatement("SELECT UserId, COUNT(*) AS Listener FROM `Listens` WHERE GuildId=? "
-                            + lastDaysQuery + "GROUP BY `UserId` ORDER BY COUNT(*) DESC LIMIT ?")) {
+                            + MySqlDatabase.getTimestampQuery(lastDays) + "GROUP BY `UserId` ORDER BY COUNT(*) DESC LIMIT ?")) {
                 preparedStatement.setString(1, guildId);
                 preparedStatement.setInt(2, count);
 
@@ -76,11 +72,9 @@ public class UserImplMySql implements UserDao {
     public Map<String, Long> getTopListenersByTime(String guildId, Integer count, final Integer lastDays) {
         final Map<String, Long> topMap = new LinkedHashMap<>();
         try (final Connection connection = hikariDataSource.getConnection()) {
-            final String lastDaysQuery = lastDays == 0 ? ""
-                    : "AND Listens.Timestamp >= DATE(NOW()) - INTERVAL " + lastDays + " DAY ";
             try (final PreparedStatement preparedStatement = connection.prepareStatement(
                     "SELECT SUM(Tracks.Duration) AS Duration, Listens.UserId  FROM `Listens` INNER JOIN Tracks ON Listens.TrackId=Tracks.Id WHERE Listens.GuildId=? "
-                            + lastDaysQuery + " GROUP BY Listens.UserId ORDER BY Duration DESC LIMIT ?")) {
+                            + MySqlDatabase.getTimestampQuery(lastDays) + " GROUP BY Listens.UserId ORDER BY Duration DESC LIMIT ?")) {
                 preparedStatement.setString(1, guildId);
                 preparedStatement.setInt(2, count);
 
