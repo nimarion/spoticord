@@ -17,24 +17,21 @@ public class TimeCommand extends Command {
 
     @Override
     public void execute(final String[] args, final Message message) {
-
+        final DayParser.Parsed parsed = DayParser.get(args, message);
+        final EmbedBuilder embedBuilder = DayParser.getEmbed(message.getGuild(), message.getAuthor(), parsed.getDays(),
+                parsed.isServerStats());
         if (args.length == 0) {
-            final EmbedBuilder embedBuilder = getEmbed(message.getGuild(), message.getAuthor());
-            final Long time = getBot().getDatabase().getUserDao().getListenTime(message.getGuild().getId(), null);
+            final Long time = getBot().getDatabase().getUserDao().getListenTime(message.getGuild().getId(), null,
+                    parsed.getDays());
             final String timeFormat = formatDuration(time);
             embedBuilder.setDescription("Der ganze Server hat bereits " + timeFormat + " Musik gehört");
             message.getTextChannel().sendMessage(embedBuilder.build()).queue();
             return;
         }
 
-        final DayParser.Parsed parsed = DayParser.get(args, message);
-        final EmbedBuilder embedBuilder = DayParser.getEmbed(message.getGuild(), message.getAuthor(), parsed.getDays(),
-                parsed.isServerStats());
-
         if (parsed.isServerStats()) {
-            addListToEmbed(embedBuilder, message.getGuild(),
-                    getBot().getDatabase().getUserDao()
-                            .getTopListenersByTime(message.getGuild().getId(), 10, parsed.getDays()));
+            addListToEmbed(embedBuilder, message.getGuild(), getBot().getDatabase().getUserDao()
+                    .getTopListenersByTime(message.getGuild().getId(), 10, parsed.getDays()));
         } else {
             final Member targetMember = parsed.getMember();
             final Long time = getBot().getDatabase().getUserDao().getListenTime(message.getGuild().getId(),
@@ -46,11 +43,11 @@ public class TimeCommand extends Command {
     }
 
     private void addListToEmbed(final EmbedBuilder embedBuilder, final Guild guild, final Map<String, Long> topMap) {
-        topMap.keySet().stream().filter(userId -> guild.getMemberById(userId) != null)
-                .map(guild::getMemberById).forEach(member -> {
-            embedBuilder.appendDescription(String.format("%s#%s %s \n", member.getEffectiveName(),
-                    member.getUser().getDiscriminator(), formatDuration(topMap.get(member.getId()))));
-        });
+        topMap.keySet().stream().filter(userId -> guild.getMemberById(userId) != null).map(guild::getMemberById)
+                .forEach(member -> {
+                    embedBuilder.appendDescription(String.format("%s#%s %s \n", member.getEffectiveName(),
+                            member.getUser().getDiscriminator(), formatDuration(topMap.get(member.getId()))));
+                });
     }
 
     private String formatDuration(long millis) {
