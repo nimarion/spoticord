@@ -6,6 +6,7 @@ import de.biosphere.spoticord.database.impl.mysql.MySqlDatabase;
 import de.biosphere.spoticord.handler.DiscordUserUpdateGameListener;
 import de.biosphere.spoticord.handler.MetricsCollector;
 import de.biosphere.spoticord.handler.StatisticsHandlerCollector;
+import de.biosphere.spoticord.rest.RestServer;
 import io.prometheus.client.exporter.HTTPServer;
 import io.sentry.Sentry;
 import net.dv8tion.jda.api.JDA;
@@ -41,7 +42,6 @@ public class Spoticord {
                 Configuration.DATABASE_PORT == null ? 3306 : Integer.valueOf(Configuration.DATABASE_PORT));
         logger.info("Database-Connection set up!");
 
-
         jda = initializeJDA();
         logger.info("JDA set up!");
 
@@ -54,6 +54,11 @@ public class Spoticord {
             new StatisticsHandlerCollector(this).register();
             timer.schedule(new MetricsCollector(this), 100, TimeUnit.SECONDS.toMillis(5));
             logger.info("Prometheus set up!");
+        }
+
+        if (Configuration.SPOTIFY_CLIENT_ID != null && Configuration.SPOTIFY_CLIENT_SECRET != null
+                && Configuration.SPOTIFY_CALLBACK_URL != null) {
+            new RestServer();
         }
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
