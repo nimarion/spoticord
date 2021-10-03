@@ -20,6 +20,10 @@ public class Configuration {
     public static final String MAX_FETCH_DAYS;
     public static final String DEFAULT_DAYS;
 
+    public static final String SPOTIFY_CLIENT_ID;
+    public static final String SPOTIFY_CLIENT_SECRET;
+    public static final String SPOTIFY_CALLBACK_URL;
+
     static {
         final Dotenv dotenv = Dotenv.configure().ignoreIfMissing().load();
 
@@ -35,6 +39,10 @@ public class Configuration {
         DISCORD_PREFIX = getenv("DISCORD_PREFIX", dotenv);
         MAX_FETCH_DAYS = getenv("MAX_FETCH_DAYS", dotenv);
         DEFAULT_DAYS = getenv("DEFAULT_DAYS", dotenv);
+
+        SPOTIFY_CLIENT_ID = getenv("SPOTIFY_CLIENT_ID", dotenv);
+        SPOTIFY_CLIENT_SECRET = getenv("SPOTIFY_CLIENT_SECRET", dotenv);
+        SPOTIFY_CALLBACK_URL = getenv("SPOTIFY_CALLBACK_URL", dotenv);
 
         try {
             checkNull();
